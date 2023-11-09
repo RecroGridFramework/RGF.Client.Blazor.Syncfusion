@@ -1,0 +1,87 @@
+﻿
+<RgfPagerComponent @ref="_rgfPagerRef" EntityParameters="EntityParameters">
+    <PagerTemplate Context="RgfPager">
+        <div class="e-pager">
+            @if (RgfPager.ItemCount != 0)
+            {
+                <SfButton CssClass="e-small" OnClick="OnShowFirstPage" Disabled="RgfPager.CurrentPage == 1">
+                    <SfIcon Name="IconName.ChevronLeftDouble" />
+                </SfButton>
+                <SfButton CssClass="e-small" OnClick="OnShowPreviousPage" Disabled="RgfPager.CurrentPage == 1">
+                    <SfIcon Name="IconName.ChevronLeft" />
+                </SfButton>
+
+                <SfNumericTextBox TValue="int" Value="RgfPager.CurrentPage" OnChange="OnShowPage"
+                                  ShowSpinButton="false" Min="1" Max="RgfPager.TotalPages" CssClass="e-small e-success ms-2"
+                                  Width="@CalcWidth(RgfPager.CurrentPage)" />
+
+                <SfButton CssClass="e-small ms-2" OnClick="OnShowNextPage" Disabled="RgfPager.CurrentPage >= RgfPager.TotalPages">
+                    <SfIcon Name="IconName.ChevronRight" />
+                </SfButton>
+
+                if (RgfPager.ItemCount > 0)
+                {
+                    <SfButton CssClass="e-small ms-1" OnClick="OnShowLastPage" Disabled="RgfPager.CurrentPage == RgfPager.TotalPages">
+                        <SfIcon Name="IconName.ChevronRightDouble" />
+                    </SfButton>
+
+                    <label class="ms-2">@RecroDict.GetRgfUiString("PageCount")</label>
+                    <SfNumericTextBox TValue="int" Value="@RgfPager.TotalPages" Readonly="true" ShowSpinButton="false" Width="@CalcWidth(RgfPager.TotalPages)" />
+                    <label class="ms-2">@RecroDict.GetRgfUiString("ItemCount")</label>
+                    <SfNumericTextBox TValue="int" Value="@RgfPager.ItemCount" Readonly="true" ShowSpinButton="false" Width="@CalcWidth(RgfPager.ItemCount)" />
+                }
+
+                if (Manager.EntityDesc.Options.GetBoolValue("RGO_ClientMode") != true)
+                {
+                    <label class="ms-2 me-1">@RecroDict.GetRgfUiString("ItemsPerPage")</label>
+                    @*The Value field in the ComboBox component must be of type string when the AllowCustom feature is enabled.*@
+                    <SfComboBox class="ms-2" TValue="string" TItem="string" Value="@RgfPager.PageSize.ToString()" ValueChanged="RgfPager.PageSizeChanging" DataSource="@(new string[] { "5", "10", "15", "25" })"
+                                ShowClearButton="false" AllowCustom="true" CssClass="e-small" Width="3.5rem" />
+                }
+            }
+            else
+            {
+                <label class="ms-2">@RecroDict.GetRgfUiString("ItemCount")</label>
+                <SfNumericTextBox TValue="int" Value="@RgfPager.ItemCount" Readonly="true" ShowSpinButton="false" Width="@CalcWidth(RgfPager.ItemCount)" />
+            }
+        </div>
+    </PagerTemplate>
+</RgfPagerComponent>
+
+<style>
+
+    .rgf-pager-container .e-pager .e-pagercontainer {
+        float: left;
+    }
+
+    .rgf-pager-container .e-pager .e-parentmsgbar {
+        float: left;
+        padding-left: 1em;
+    }
+
+</style>
+
+@code {
+
+    [Parameter, EditorRequired]
+    public RgfEntityParameters EntityParameters { get; set; } = null!;
+
+    private IRgManager Manager => EntityParameters.Manager!;
+    private RgfPagerParameters PagerParameters { get => EntityParameters.PagerParameters; }
+    private IRecroDictService RecroDict => Manager.RecroDict;
+
+    private RgfPagerComponent _rgfPagerRef { get; set; } = null!;
+
+    private void OnShowFirstPage(MouseEventArgs args) => _rgfPagerRef.PageChanging(1);
+    private void OnShowNextPage(MouseEventArgs args) => _rgfPagerRef.PageChanging(_rgfPagerRef.CurrentPage + 1);
+    private void OnShowPreviousPage(MouseEventArgs args) => _rgfPagerRef.PageChanging(_rgfPagerRef.CurrentPage - 1);
+    private void OnShowLastPage(MouseEventArgs args) => _rgfPagerRef.PageChanging(_rgfPagerRef.TotalPages);
+    private void OnShowPage(ChangeEventArgs args)
+    {
+        if (Int32.TryParse(args.Value?.ToString(), out int page))
+        {
+            _rgfPagerRef.PageChanging(page);
+        }
+    }
+    private string CalcWidth(int page) => page < 100 ? "2rem" : page < 1E4 ? "3rem" : "5rem";
+}

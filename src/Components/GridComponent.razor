@@ -1,0 +1,50 @@
+﻿@using Syncfusion.Blazor.Grids
+@using Syncfusion.Blazor.Popups
+
+<RgfGridComponent @ref="_rgfGridRef" EntityParameters="EntityParameters">
+    <GridTemplate Context="RgfGrid">
+        <SfGrid @ref="_sfGridRef" DataSource="RgfGrid.GridData" 
+                GridLines="GridLine.Both" AllowResizing="false" AllowReordering="true" AllowSorting="@(EntityDesc.Options.GetBoolValue("RGO_ClientMode") != true)">
+            <GridEvents TValue="RgfDynamicDictionary" OnActionBegin="OnActionBegin" RowDataBound="RowDataBound" QueryCellInfo="CustomizeCell"
+                        RowSelected="RowSelectHandler" RowDeselected="RowDeselectHandler" OnRecordDoubleClick="OnRecordDoubleClick">
+            </GridEvents>
+            <GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.Excel" />
+            <GridSortSettings>
+                <GridSortColumns>
+                    @foreach (var col in EntityDesc.SortColumns)
+                    {
+                        <GridSortColumn Field="@col.Alias" Direction="@(col.Sort > 0 ? SortDirection.Ascending : SortDirection.Descending)" />
+                    }
+                </GridSortColumns>
+            </GridSortSettings>
+            <GridColumns>
+                @foreach (var prop in EntityDesc.SortedVisibleColumns)
+                {
+                    <GridColumn Field="@prop.Alias" HeaderText="@prop.ColTitle" IsPrimaryKey="prop.IsKey"
+                                AllowSorting="@prop.Orderable" AllowResizing="true"
+                                AutoFit="prop.ColWidth == 0" Width="@(prop.ColWidth > 0 ? prop.ColWidth.ToString() : null)"
+                                SortComparer="new CustomComparer()">
+                        <Template Context="rowData">
+                            @RgfGrid.CreateGridColumn(prop, (RgfDynamicDictionary)rowData)
+                        </Template>
+                    </GridColumn>
+                }
+            </GridColumns>
+        </SfGrid>
+    </GridTemplate>
+
+    <ColumnSettingsTemplate>
+        <GridColumnSettingsComponent GridComponent="context" />
+    </ColumnSettingsTemplate>
+</RgfGridComponent>
+
+@code {
+
+    [Parameter, EditorRequired]
+    public RgfEntityParameters EntityParameters { get; set; } = null!;
+
+    private IRgManager Manager => EntityParameters.Manager!;
+    private RgfGridParameters GridParameters { get => EntityParameters.GridParameters; }
+
+    public class CustomComparer : IComparer<object?> { public int Compare(object? x, object? y) => 0; }//Turn Off Short => In Syncfusion, this also doesn't work, but I'll leave it here.
+}

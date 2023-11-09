@@ -1,0 +1,57 @@
+﻿@using Syncfusion.Blazor.DropDowns
+
+<SfDropDownList TItem="ThemeDetails" TValue="string" @bind-Value="ThemeName" DataSource="@Themes" Width="215px">
+    <DropDownListFieldSettings Text="Text" Value="ID" />
+    <DropDownListEvents TItem="ThemeDetails" TValue="string" ValueChange="OnThemeChange" />
+</SfDropDownList>
+
+@inject IJSRuntime _jsRuntime
+@code {
+
+    [Parameter]
+    public string ThemeName { get; set; } = "bootstrap5";
+
+    private IJSObjectReference? _module;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var libName = System.Reflection.Assembly.GetExecutingAssembly().GetName().Name;
+            await _jsRuntime.InvokeAsync<object>("Recrovit.LPUtils.AddStyleSheetLink", $"{RgfClientConfiguration.AppRootUrl}_content/{libName}/css/syncfusion-dark-theme.min.css");
+            _module = await _jsRuntime.InvokeAsync<IJSObjectReference>("import", $"{RgfClientConfiguration.AppRootUrl}_content/{libName}/scripts/syncfusion-theme.js");
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    public void OnThemeChange(ChangeEventArgs<string, ThemeDetails> args)
+    {
+        _module?.InvokeVoidAsync("setTheme", args.ItemData.ID, RgfClientConfiguration.AppRootUrl);
+    }
+
+    public class ThemeDetails
+    {
+        public ThemeDetails(string text, string iD)
+        {
+            Text = text;
+            ID = iD;
+        }
+
+        public string Text { get; set; }
+        public string ID { get; set; }
+    }
+
+    private List<ThemeDetails> Themes = new List<ThemeDetails>() {
+        new("Bootstrap 5", "bootstrap5"),
+        new("Bootstrap 5 Dark", "bootstrap5-dark"),
+        new("Google’s Material", "material"),
+        new("Google’s Material-Dark", "material-dark"),
+        new("Tailwind CSS", "tailwind"),
+        new("Tailwind CSS Dark", "tailwind-dark"),
+        new("Fluent", "fluent"),
+        new("Fluent Dark", "fluent-dark"),
+        new("Microsoft Office Fabric", "fabric"),
+        new("Microsoft Office Fabric Dark", "fabric-dark"),
+        new("High Contrast", "highcontrast"),
+     };
+}

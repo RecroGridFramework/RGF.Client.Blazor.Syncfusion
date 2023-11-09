@@ -1,0 +1,91 @@
+﻿@using Syncfusion.Blazor.Navigations
+@using Syncfusion.Blazor.Spinner
+
+@if (!_initialized)
+{
+    <div style="position:relative;width:100px;height:100px;">
+        <SfSpinner Label="Loading menu..." Visible="true" />
+    </div>
+}
+else if (_menuItems != null)
+{
+    <SfMenu Items="@_menuItems">
+        <MenuFieldSettings Text="@nameof(RgfMenu.Title)" Disabled="@nameof(RgfMenu.Disabled)" IconCss="@nameof(RgfMenu.Icon)"
+                           Separator="@nameof(RgfMenu.Separator)" Children="@nameof(RgfMenu.NestedMenuOrNull)"
+                           Url="@(MenuParameters.MenuSelectionCallback == null ? nameof(RgfMenu.Command) : null)" />
+        <MenuEvents TValue="RgfMenu" ItemSelected="ItemSelected" OnItemRender="OnItemRender" />
+    </SfMenu>
+}
+
+@inject IRecroDictService _recroDict
+@code
+{
+    [Parameter, EditorRequired]
+    public RgfMenuParameters MenuParameters { get; set; } = null!;
+
+    [Inject]
+    private IRgfMenuService _menuService { get; set; } = null!;
+
+    private bool _initialized = false;
+    private List<RgfMenu>? _menuItems { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        if (MenuParameters.MenuId != null)
+        {
+            var res = await _menuService.GetMenuAsync((int)MenuParameters.MenuId, _recroDict.DefaultLanguage);
+            if (res.Success)
+            {
+                _menuItems = res.Result;
+            }
+        }
+        else
+        {
+            if (MenuParameters.Navbar)
+            {
+                _menuItems = MenuParameters.MenuItems;
+            }
+            else
+            {
+                var menu = new RgfMenu()
+                    {
+                        MenuType = RgfMenuType.Menu,
+                        Icon = MenuParameters.Icon.ToString(),
+                        NestedMenu = MenuParameters.MenuItems
+                    };
+                _menuItems = new List<RgfMenu>() { menu };
+            }
+        }
+        await InitializeAsync(_menuItems);
+        _initialized = true;
+    }
+
+    private Task InitializeAsync(IEnumerable<RgfMenu> menuItems)
+    {
+        foreach (var item in menuItems)
+        {
+            if (item.NestedMenu?.Any() == true)
+            {
+                item.NestedMenu = item.NestedMenu.Where(e => e.MenuType != RgfMenuType.Custom).ToList();
+            }
+        }
+        return Task.CompletedTask;
+    }
+
+    public async Task ItemSelected(MenuEventArgs<RgfMenu> args)
+    {
+        if (MenuParameters.MenuSelectionCallback != null)
+        {
+            await MenuParameters.MenuSelectionCallback.Invoke(args.Item);
+        }
+    }
+
+    public async Task OnItemRender(MenuEventArgs<RgfMenu> args)
+    {
+        if (MenuParameters.MenuRenderCallback != null)
+        {
+            await MenuParameters.MenuRenderCallback.Invoke(args.Item);
+        }
+    }
+}

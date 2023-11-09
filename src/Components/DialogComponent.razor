@@ -1,0 +1,49 @@
+﻿@using Syncfusion.Blazor.Popups
+
+<SfDialog IsModal="DialogParameters.IsModal"
+          AllowDragging="true"
+          EnableResize="DialogParameters.Resizable ?? false"
+          CssClass="@DialogParameters.CssClass"
+          ShowCloseIcon="DialogParameters.ShowCloseButton ?? false"
+          Width="@(DialogParameters.Width ?? "auto")"
+          Height="@DialogParameters.Height">
+    <DialogTemplates Header="DialogParameters.Header" Content="DialogParameters.Content">
+        <FooterTemplate>
+            @if (DialogParameters.FooterTemplate != null)
+            {
+                @DialogParameters.FooterTemplate
+            }
+            @if (DialogParameters.PredefinedButtons != null)
+            {
+                foreach (var button in DialogParameters.PredefinedButtons)
+                {
+                    <SfButton IsPrimary="button.IsPrimary" OnClick="button.Callback">
+                        @if (!string.IsNullOrEmpty(button.ChildText))
+                        {
+                            @button.ChildText
+                        }
+                        else if (button.ChildContent != null)
+                        {
+                            @button.ChildContent
+                        }
+                    </SfButton>
+                }
+            }
+        </FooterTemplate>
+    </DialogTemplates>
+    <DialogEvents OnClose="OnClose" />
+</SfDialog>
+
+@code {
+
+    [Parameter, EditorRequired]
+    public RgfDialogParameters DialogParameters { get; set; } = null!;
+
+    private void OnClose(BeforeCloseEventArgs args)
+    {
+        if (DialogParameters.OnClose != null)
+        {
+            args.Cancel = DialogParameters.OnClose.Invoke() == false;
+        }
+    }
+}
