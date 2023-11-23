@@ -33,7 +33,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Recrovit.RecroGridFramework.Client.Blazor" Version="8.0.0-preview" Condition="'$(Configuration)'=='Release'" />
     <PackageReference Include="Syncfusion.Blazor.Cards" Version="23.2.4" />
     <PackageReference Include="Syncfusion.Blazor.DropDowns" Version="23.2.4" />
     <PackageReference Include="Syncfusion.Blazor.Grid" Version="23.2.4" />
@@ -44,8 +43,19 @@
     <PackageReference Include="Syncfusion.Blazor.Themes" Version="23.2.4" />
   </ItemGroup>
 
+  <ItemGroup Condition="'$(Configuration)'=='Release'" >
+    <PackageReference Include="Recrovit.RecroGridFramework.Client.Blazor" Version="8.0.0-preview" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Configuration)'=='Debug'" >
+    <ProjectReference Include="..\..\RGF.Client.Blazor\src\RGF.Client.Blazor.csproj" />
+  </ItemGroup>
+
   <ItemGroup>
-    <ProjectReference Include="..\..\RGF.Client.Blazor\src\RGF.Client.Blazor.csproj" Condition="'$(Configuration)'=='Debug'" />
+    <Content Remove="libman.json" />
+    <None Include="libman.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
