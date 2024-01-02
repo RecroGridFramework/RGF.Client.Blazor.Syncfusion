@@ -1,0 +1,210 @@
+﻿@using Microsoft.AspNetCore.Components.Forms
+@using Syncfusion.Blazor.Cards
+@using Syncfusion.Blazor.Popups
+@using Syncfusion.Blazor.RichTextEditor
+
+<RgfFormItemComponent FormItemParameters="FormItemParameters">
+    <ItemTemplate Context="RgfFormItem">
+
+        @if (!Property.EmbededGrid && !Property.NoLabel && (PropertyDesc.FormType != PropertyFormType.CheckBox || Property.AvailableItems?.Any() == true))
+        {
+            <label for="@Id">@(Property.Label)</label>
+        }
+
+        @switch (PropertyDesc.FormType)
+        {
+            case PropertyFormType.TextBox:
+                if (Property.ForeignEntity != null)
+                {
+                    <div class="row g-1">
+                        <div class="col">
+                            <SfTextBox @bind-Value="ItemData.StringValue"
+                                       EnableRtl="PropertyDesc.ListType == PropertyListType.Numeric"
+                                       Readonly="Property.Readonly" Enabled="!Property.Disabled"
+                                       CssClass="@RgfFormItem.CssClass" ID="@Id" />
+                        </div>
+                        <div class="col-1">
+                            <SfButton type="button" IsPrimary="true" CssClass="e-small e-outline" OnClick="() => RgfFormItem.OnSearchEntity(ItemData.StringValue)">
+                                <SfIcon Name="IconName.Search" Size="IconSize.Medium" />
+                            </SfButton>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    @switch (PropertyDesc.ClientDataType)
+                    {
+                        case ClientDataType.Integer:
+                            <SfNumericTextBox @bind-Value="ItemData.IntValue"
+                                              TValue="int?" EnableRtl="true" ShowSpinButton="false"
+                                              Readonly="Property.Readonly" Enabled="!Property.Disabled"
+                                              CssClass="@RgfFormItem.CssClass" ID="@Id" />
+                            break;
+
+                        case ClientDataType.Decimal:
+                            <SfNumericTextBox @bind-Value="ItemData.DecimalValue"
+                                              TValue="decimal?" EnableRtl="true" ShowSpinButton="false" Decimals="5"
+                                              Readonly="Property.Readonly" Enabled="!Property.Disabled"
+                                              CssClass="@RgfFormItem.CssClass" ID="@Id" />
+                            break;
+
+                        case ClientDataType.Double:
+                            <SfNumericTextBox @bind-Value="ItemData.DoubleValue"
+                                              TValue="double?" EnableRtl="true" ShowSpinButton="false" Decimals="5"
+                                              Readonly="Property.Readonly" Enabled="!Property.Disabled"
+                                              CssClass="@RgfFormItem.CssClass" ID="@Id" />
+                            break;
+
+                        default:
+                            <SfTextBox @bind-Value="ItemData.StringValue"
+                                       Type="PropertyDesc.PasswordType ? InputType.Password : InputType.Text"
+                                       Readonly="Property.Readonly" Enabled="!Property.Disabled"
+                                       CssClass="@RgfFormItem.CssClass" ID="@Id" />
+                            break;
+                    }
+                }
+                break;
+
+            case PropertyFormType.TextBoxMultiLine:
+                <SfTextBox @bind-Value="ItemData.StringValue"
+                           Multiline="true"
+                           Readonly="Property.Readonly" Enabled="!Property.Disabled"
+                           CssClass="@RgfFormItem.CssClass" ID="@Id" />
+                break;
+
+            case PropertyFormType.CheckBox:
+            case PropertyFormType.DropDown:
+                if (PropertyDesc.FormType == PropertyFormType.CheckBox && Property.AvailableItems?.Any() != true)
+                {
+                    <SfCheckBox @bind-Checked="ItemData.BooleanValue"
+                                Label="@Property.Label" LabelPosition="Syncfusion.Blazor.Buttons.LabelPosition.Before"
+                                Disabled="Property.Readonly || Property.Disabled"
+                                CssClass="@RgfFormItem.CssClass" />
+                }
+                else
+                {
+                    <SfComboBox @bind-Value="ItemData.StringValue" DataSource="Property.AvailableItems"
+                                TItem="RgfForm.DictionaryItem" TValue="string" ShowClearButton="false"
+                                Readonly="Property.Readonly" Enabled="!Property.Disabled"
+                                CssClass="@RgfFormItem.CssClass" ID="@Id">
+                        <ComboBoxFieldSettings Value="Key" Text="Value" />
+                    </SfComboBox>
+                }
+                break;
+
+            case PropertyFormType.Date:
+                <SfDatePicker @bind-Value="ItemData.DateTimeValue"
+                              TValue="DateTime?" ShowClearButton="true" Format="yyyy.MM.dd."
+                              Readonly="Property.Readonly" Enabled="!Property.Disabled"
+                              CssClass="@RgfFormItem.CssClass" ID="@Id" />
+                break;
+
+            case PropertyFormType.DateTime:
+                <SfDateTimePicker @bind-Value="ItemData.DateTimeValue"
+                                  TValue="DateTime?" ShowClearButton="true" Format="yyyy.MM.dd. HH:mm:ss"
+                                  Readonly="Property.Readonly" Enabled="!Property.Disabled"
+                                  CssClass="@RgfFormItem.CssClass" ID="@Id" />
+                break;
+
+            case PropertyFormType.StaticText:
+                <div class="@RgfFormItem.CssClass" style="@Property.Style">
+                    @(ItemData.StringValue)
+                </div>
+                break;
+
+            case PropertyFormType.ImageInDB:
+                <img src="@($"{ApiService.BaseAddress}{ItemData.StringValue}")" class="@RgfFormItem.CssClass" style="@Property.Style" />
+                break;
+
+            case PropertyFormType.RecroDict:
+                <div class="@RgfFormItem.CssClass" style="@Property.Style">
+                    @((MarkupString)ItemData.StringValue)
+                </div>
+                break;
+
+            case PropertyFormType.HtmlEditor:
+                <SfRichTextEditor ShowCharCount="true" AutoSaveOnIdle="true" @bind-Value="ItemData.StringValue" Enabled="!Property.Disabled">
+                    <RichTextEditorToolbarSettings Items="@Tools" />
+                    <RichTextEditorQuickToolbarSettings Image="@Image" Link="@Link" />
+                </SfRichTextEditor>
+                break;
+
+            case PropertyFormType.RecroGrid:
+                <div class="@($"overflow-x-auto {RgfFormItem.CssClass ?? ""}".TrimEnd())" style="@Property.Style">
+                    @if (this.FormComponent.FormEditMode == FormEditMode.Create)
+                    {
+                        <SfCard>
+                            <CardHeader Title="@Property.Label" />
+                        </SfCard>
+                    }
+                    else
+                    {
+                        @RgfEntityComponent.Create(new RgfEntityParameters(Property.ForeignEntity.EntityName, FormComponent.Manager.SessionParams) { GridId = ItemData.StringValue})
+                    }
+                </div>
+                break;
+
+            case PropertyFormType.Entity:
+            case PropertyFormType.Invalid:
+            case PropertyFormType.ListBox:
+            case PropertyFormType.Custom:
+            default:
+                break;
+        }
+
+    </ItemTemplate>
+</RgfFormItemComponent>
+
+@code {
+
+    [Parameter, EditorRequired]
+    public RgfFormItemParameters FormItemParameters { get; set; } = null!;
+
+    [CascadingParameter]
+    public EditContext CurrentEditContext { get; set; } = null!;
+
+    protected RgfFormComponent FormComponent => FormItemParameters.FormComponent;
+    protected RgfForm.Property Property => FormItemParameters.Property;
+    protected RgfDynamicData ItemData => FormItemParameters.ItemData;
+
+    protected RgfProperty PropertyDesc => Property.PropertyDesc;
+    protected string Id { get; set; } = DynamicComponentWrapper.GetNextId();
+
+    private List<ToolbarItemModel> Tools = new List<ToolbarItemModel>()
+    {
+        new ToolbarItemModel() { Command = ToolbarCommand.Bold },
+        new ToolbarItemModel() { Command = ToolbarCommand.Italic },
+        new ToolbarItemModel() { Command = ToolbarCommand.Underline },
+        new ToolbarItemModel() { Command = ToolbarCommand.Separator },
+        new ToolbarItemModel() { Command = ToolbarCommand.Formats },
+        new ToolbarItemModel() { Command = ToolbarCommand.Alignments },
+        new ToolbarItemModel() { Command = ToolbarCommand.Separator },
+        new ToolbarItemModel() { Command = ToolbarCommand.CreateLink },
+        new ToolbarItemModel() { Command = ToolbarCommand.Image },
+        new ToolbarItemModel() { Command = ToolbarCommand.Separator },
+        new ToolbarItemModel() { Command = ToolbarCommand.SourceCode },
+        new ToolbarItemModel() { Command = ToolbarCommand.Separator },
+        new ToolbarItemModel() { Command = ToolbarCommand.Undo },
+        new ToolbarItemModel() { Command = ToolbarCommand.Redo }
+    };
+    private List<ImageToolbarItemModel> Image = new List<ImageToolbarItemModel>()
+    {
+        new ImageToolbarItemModel() { Command = ImageToolbarCommand.Replace },
+        new ImageToolbarItemModel() { Command = ImageToolbarCommand.Align },
+        new ImageToolbarItemModel() { Command = ImageToolbarCommand.Caption },
+        new ImageToolbarItemModel() { Command = ImageToolbarCommand.Remove },
+        new ImageToolbarItemModel() { Command = ImageToolbarCommand.OpenImageLink },
+        new ImageToolbarItemModel() { Command = ImageToolbarCommand.HorizontalSeparator },
+        new ImageToolbarItemModel() { Command = ImageToolbarCommand.EditImageLink },
+        new ImageToolbarItemModel() { Command = ImageToolbarCommand.RemoveImageLink },
+        new ImageToolbarItemModel() { Command = ImageToolbarCommand.Display },
+        new ImageToolbarItemModel() { Command = ImageToolbarCommand.AltText },
+        new ImageToolbarItemModel() { Command = ImageToolbarCommand.Dimension }
+    };
+    private List<LinkToolbarItemModel> Link = new List<LinkToolbarItemModel>()
+    {
+        new LinkToolbarItemModel() { Command = LinkToolbarCommand.Open },
+        new LinkToolbarItemModel() { Command = LinkToolbarCommand.Edit },
+        new LinkToolbarItemModel() { Command = LinkToolbarCommand.UnLink }
+    };
+}

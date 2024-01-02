@@ -1,0 +1,200 @@
+﻿
+<div>
+    <ul>
+        @for (int idx = 0; idx < Condition.Conditions?.Count; idx++)
+        {
+            var item = Condition.Conditions[idx];
+            <li>
+                <div class="condition-container">
+                    <div class="combo-logical">
+                        <SfComboBox CssClass="e-small" @bind-Value="item.LogicalOperator" TItem="KeyValuePair<RgfFilter.LogicalOperator, string>" TValue="RgfFilter.LogicalOperator"
+                                    ShowClearButton="false" Enabled="idx != 0" DataSource="LogicalOperators">
+                            <ComboBoxFieldSettings Value="Key" Text="Value" />
+                        </SfComboBox>
+                    </div>
+                    <div>
+                        <SfButton CssClass="e-small" OnClick="() => OnRemoveCondition(item)">
+                            <SfIcon Name="IconName.Trash" />
+                        </SfButton>
+                    </div>
+                    <div>
+                        <SfButton CssClass="e-small"  OnClick="() => OnAddBracket(item)">{ }</SfButton>
+                    </div>
+                    @if (item.Conditions != null)
+                    {
+                        <div>
+                            <SfButton CssClass="e-small e-info" OnClick="() => OnRemoveBracket(item)">
+                                <sup>@item.ClientId</sup><span>(</span>
+                            </SfButton>
+                        </div>
+                    }
+                    else
+                    {
+                        <div>
+                            <SfComboBox Value="item.PropertyId" TItem="KeyValuePair<int,string>" TValue="int" ShowClearButton="false" AllowCustom="false" DataSource="Columns">
+                                <ComboBoxFieldSettings Value="Key" Text="Value" />
+                                <ComboBoxEvents TItem="KeyValuePair<int,string>" TValue="int"
+                                                ValueChange="(ChangeEventArgs<int, KeyValuePair<int,string>> args) => OnChangeProperty(args, item)" />
+                            </SfComboBox>
+                        </div>
+                        <div>
+                            <SfComboBox Value="item.QueryOperator" TItem="KeyValuePair<RgfFilter.QueryOperator,string>" TValue="RgfFilter.QueryOperator" ShowClearButton="false" AllowCustom="false" DataSource="GetQueryOperators(item)">
+                                <ComboBoxFieldSettings Value="Key" Text="Value" />
+                                <ComboBoxEvents TItem="KeyValuePair<RgfFilter.QueryOperator,string>" TValue="RgfFilter.QueryOperator"
+                                                ValueChange="(ChangeEventArgs<RgfFilter.QueryOperator, KeyValuePair<RgfFilter.QueryOperator,string>> args) => OnChangeQueryOperator(args, item)" />
+                            </SfComboBox>
+                        </div>
+                        @if (!(new[] { RgfFilter.QueryOperator.IsNull, RgfFilter.QueryOperator.IsNotNull, RgfFilter.QueryOperator.Exists }.Contains(item.QueryOperator)))
+                        {
+                            var prop = FilterComponent.RgfFilterProperties.Single(e => e.Id == item.PropertyId);
+                            <div>
+                                @switch (prop.ClientDataType)
+                                {
+                                    case ClientDataType.Integer:
+                                        <SfNumericTextBox TValue="int?" @bind-Value="item.IntValue1" />
+                                        break;
+
+                                    case ClientDataType.Decimal:
+                                        <SfNumericTextBox TValue="decimal?" @bind-Value="item.DecimalValue1" ShowSpinButton="false" />
+                                        break;
+
+                                    case ClientDataType.Double:
+                                        <SfNumericTextBox TValue="double?" @bind-Value="item.DoubleValue1" ShowSpinButton="false" />
+                                        break;
+
+                                    case ClientDataType.DateTime:
+                                        if (prop.FormType == PropertyFormType.Date)
+                                        {
+                                            <SfDatePicker TValue="DateTime?" ShowClearButton="true" @bind-Value="item.DateTimeValue1" Format="yyyy.MM.dd." />
+                                        }
+                                        else
+                                        {
+                                            <SfDateTimePicker TValue="DateTime?" ShowClearButton="true" @bind-Value="item.DateTimeValue1" Format="yyyy.MM.dd. HH:mm:ss" />
+                                        }
+                                        break;
+
+                                    case ClientDataType.Boolean:
+                                        <SfCheckBox @bind-Checked="item.BooleanValue1" />
+                                        break;
+
+                                    default:
+                                        if (prop.FormType == PropertyFormType.DropDown || prop.FormType == PropertyFormType.ListBox)
+                                        {
+                                            <SfListBox TValue="string[]" Value="item.StringArray1" TItem="RgfFilter.DictionaryItem" DataSource="prop.DictionaryItems">
+                                                <ListBoxSelectionSettings ShowCheckbox="true" Mode="Syncfusion.Blazor.DropDowns.SelectionMode.Multiple" />
+                                                <ListBoxEvents TValue="string[]" TItem="RgfFilter.DictionaryItem" ValueChange="(ListBoxChangeEventArgs<string[], RgfFilter.DictionaryItem> args) => item.StringArray1 = args.Value" />
+                                                <ListBoxFieldSettings Text="Value" Value="Key" />
+                                            </SfListBox>
+                                        }
+                                        else
+                                        {
+                                            <SfTextBox @bind-Value="item.StringValue1" />
+                                        }
+                                        break;
+                                }
+                            </div>
+                            @if (new[] { RgfFilter.QueryOperator.Interval, RgfFilter.QueryOperator.IntervalE }.Contains(item.QueryOperator))
+                            {
+                                <div>
+                                    @switch (prop.ClientDataType)
+                                    {
+                                        case ClientDataType.Integer:
+                                            <SfNumericTextBox TValue="int?" @bind-Value="item.IntValue2" />
+                                            break;
+
+                                        case ClientDataType.Decimal:
+                                            <SfNumericTextBox TValue="decimal?" @bind-Value="item.DecimalValue2" ShowSpinButton="false" />
+                                            break;
+
+                                        case ClientDataType.Double:
+                                            <SfNumericTextBox TValue="double?" @bind-Value="item.DoubleValue2" ShowSpinButton="false" />
+                                            break;
+
+                                        case ClientDataType.DateTime:
+                                            if (prop.FormType == PropertyFormType.Date)
+                                            {
+                                                <SfDatePicker TValue="DateTime?" ShowClearButton="true" @bind-Value="item.DateTimeValue2" Format="yyyy.MM.dd." />
+                                            }
+                                            else
+                                            {
+                                                <SfDateTimePicker TValue="DateTime?" ShowClearButton="true" @bind-Value="item.DateTimeValue2" Format="yyyy.MM.dd. HH:mm:ss" />
+                                            }
+                                            break;
+
+                                        default:
+                                            <SfTextBox @bind-Value="item.StringValue2" />
+                                            break;
+                                    }
+                                </div>
+                            }
+                            @if (new[] { RgfFilter.QueryOperator.Like, RgfFilter.QueryOperator.NotLike }.Contains(item.QueryOperator))
+                            {
+                                <div>
+                                    <SfCheckBox @bind-Checked="item.ToLower">ToLower</SfCheckBox>
+                                </div>
+                            }
+                        }
+                    }
+                </div>
+            </li>
+            @if (item.Conditions != null)
+            {
+                <li>
+                    <FilterConditionComponent FilterComponent="FilterComponent" Condition="item" />
+                </li>
+                <li>
+                    <div class="condition-container">
+                        <div>
+                            <SfButton CssClass="e-small e-info" OnClick="() => OnRemoveBracket(item)">
+                                <span>)</span><sup>@item.ClientId</sup>
+                            </SfButton>
+                        </div>
+                    </div>
+                </li>
+            }
+        }
+        <li>
+            <SfButton CssClass="e-small e-outline" IsPrimary="true" OnClick="() => OnAddCondition(Condition)">
+                <SfIcon Name="IconName.Plus" />
+            </SfButton>
+        </li>
+    </ul>
+</div>
+
+@code {
+
+    [Parameter, EditorRequired]
+    public RgfFilterComponent FilterComponent { get; set; } = null!;
+
+    [Parameter, EditorRequired]
+    public RgfFilter.Condition Condition { get; set; } = null!;
+
+    private IRgManager Manager => FilterComponent.EntityParameters.Manager!;
+    private IRecroDictService RecroDict => Manager.RecroDict;
+
+    private Dictionary<int, string> Columns => FilterComponent.RgfFilterProperties.ToDictionary(p => p.Id, p => p.ColTitle);
+    private Dictionary<RgfFilter.LogicalOperator, string> LogicalOperators => RgfFilter.GetLogicalOperators(RecroDict);
+    private Dictionary<RgfFilter.QueryOperator, string> GetQueryOperators(RgfFilter.Condition condition) => RgfFilter.GetQueryOperators(FilterComponent.RgfFilterProperties.SingleOrDefault(e => e.Id == condition.PropertyId)?.Operators, RecroDict);
+
+    private void OnAddCondition(RgfFilter.Condition condition) => FilterComponent.AddCondition(condition);
+    private void OnRemoveCondition(RgfFilter.Condition condition) => FilterComponent.RemoveCondition(condition);
+    private void OnAddBracket(RgfFilter.Condition condition) => FilterComponent.AddBracket(condition);
+    private void OnRemoveBracket(RgfFilter.Condition condition) => FilterComponent.RemoveBracket(condition);
+    private void OnChangeQueryOperator(ChangeEventArgs<RgfFilter.QueryOperator, KeyValuePair<RgfFilter.QueryOperator, string>> args, RgfFilter.Condition condition) => FilterComponent.ChangeQueryOperator(condition, args.Value);
+    private void OnChangeProperty(ChangeEventArgs<int, KeyValuePair<int, string>> args, RgfFilter.Condition condition)
+    {
+        if (FilterComponent.ChangeProperty(condition, args.Value))
+        {
+            //TODO: Does the component need to be refreshed? In -> CheckBox
+            //Refresh component
+            var saveConditions = Condition.Conditions;
+            Condition.Conditions = null;
+            StateHasChanged();
+            Task.Run(() =>
+            {
+                Condition.Conditions = saveConditions;
+                StateHasChanged();
+            });
+        }
+    }
+}
