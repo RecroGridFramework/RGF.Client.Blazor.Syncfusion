@@ -7,7 +7,8 @@
                   FormItemLayoutTemplate="FormItemLayoutTemplate">
     <FormTemplate Context="RgfForm">
         <EditForm EditContext="RgfForm.CurrentEditContext">
-            <SfTab CssClass="e-fill rg-tabs" LoadOn="ContentLoad.Demand">
+            <SfTab CssClass="e-fill rg-tabs" LoadOn="ContentLoad.Demand" @bind-SelectedItem="ActiveTabIndex">
+                <TabEvents Selecting="(arg) => PreviouslyActiveTabs.Add(arg.SelectingIndex)" />
                 <TabItems>
                     @foreach (var tab in RgfForm.FormData.FormTabs)
                     {
@@ -73,6 +74,8 @@
     protected IRecroDictService RecroDict => Manager.RecroDict;
 
     private RgfFormComponent _rgfFormRef { get; set; } = null!;
+    public int ActiveTabIndex { get; set; } = 0;
+    public HashSet<int> PreviouslyActiveTabs { get; private set; } = new() { 0 };
 
     protected override void OnInitialized()
     {
