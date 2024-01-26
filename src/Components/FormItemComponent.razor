@@ -131,7 +131,7 @@
 
             case PropertyFormType.RecroGrid:
                 <div class="@($"overflow-x-auto {RgfFormItem.CssClass ?? ""}".TrimEnd())" style="@Property.Style">
-                    @if (this.FormComponent.FormEditMode == FormEditMode.Create)
+                    @if (this.BaseFormComponent.FormEditMode == FormEditMode.Create)
                     {
                         <SfCard>
                             <CardHeader Title="@Property.Label" />
@@ -139,7 +139,7 @@
                     }
                     else
                     {
-                        @RgfEntityComponent.Create(new RgfEntityParameters(Property.ForeignEntity.EntityName, FormComponent.Manager.SessionParams) { GridId = ItemData.StringValue})
+                        @RgfEntityComponent.Create(new RgfEntityParameters(Property.ForeignEntity.EntityName, BaseFormComponent.Manager.SessionParams) { GridId = ItemData.StringValue})
                     }
                 </div>
                 break;
@@ -163,7 +163,7 @@
     [CascadingParameter]
     public EditContext CurrentEditContext { get; set; } = null!;
 
-    protected RgfFormComponent FormComponent => FormItemParameters.FormComponent;
+    protected RgfFormComponent BaseFormComponent => FormItemParameters.BaseFormComponent;
     protected RgfForm.Property Property => FormItemParameters.Property;
     protected RgfDynamicData ItemData => FormItemParameters.ItemData;
 
