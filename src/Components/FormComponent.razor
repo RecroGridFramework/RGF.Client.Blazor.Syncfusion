@@ -2,7 +2,7 @@
 @using Syncfusion.Blazor.Cards
 @using Syncfusion.Blazor.Navigations
 
-<RgfFormComponent @ref="_rgfFormRef" EntityParameters="EntityParameters"
+<RgfFormComponent @ref="_rgfFormRef" EntityParameters="EntityParameters" FormComponent="this"
                   FormGroupLayoutTemplate="FormGroupLayoutTemplate"
                   FormItemLayoutTemplate="FormItemLayoutTemplate">
     <FormTemplate Context="RgfForm">
@@ -45,7 +45,6 @@
             </CardContent>
         </SfCard>
     </FormValidationTemplate>
-
 </RgfFormComponent>
 
 <style>

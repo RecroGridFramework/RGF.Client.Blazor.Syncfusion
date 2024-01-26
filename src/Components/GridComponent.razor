@@ -1,7 +1,7 @@
 ﻿@using Syncfusion.Blazor.Grids
 @using Syncfusion.Blazor.Popups
 
-<RgfGridComponent @ref="_rgfGridRef" EntityParameters="EntityParameters">
+<RgfGridComponent @ref="_rgfGridRef" EntityParameters="EntityParameters" GridComponent="this">
     <GridTemplate Context="RgfGrid">
         <SfGrid @ref="_sfGridRef" DataSource="RgfGrid.GridData" 
                 GridLines="GridLine.Both" AllowResizing="false" AllowReordering="true" AllowSorting="@(EntityDesc.Options.GetBoolValue("RGO_ClientMode") != true)">
