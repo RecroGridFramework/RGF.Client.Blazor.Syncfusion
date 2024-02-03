@@ -1,12 +1,11 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
-using Recrovit.RecroGridFramework.Abstraction.Infrastructure.Events;
+using Recrovit.RecroGridFramework.Abstraction.Contracts.Services;
 using Recrovit.RecroGridFramework.Abstraction.Models;
 using Recrovit.RecroGridFramework.Client.Blazor.Components;
+using Recrovit.RecroGridFramework.Client.Blazor.Events;
 using Syncfusion.Blazor.Grids;
-using System;
-using System.Linq;
 
 namespace Recrovit.RecroGridFramework.Client.Blazor.SyncfusionUI.Components;
 
@@ -28,14 +27,15 @@ public partial class GridComponent : ComponentBase
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        GridParameters.Events.CreateAttributes.Subscribe(OnCreateAttributes);
+        GridParameters.EventDispatcher.Subscribe(RgfGridEventKind.CreateAttributes, OnCreateAttributes);
     }
 
-    protected virtual Task OnCreateAttributes(DataEventArgs<RgfDynamicDictionary> rowData)
+    protected virtual Task OnCreateAttributes(IRgfEventArgs<RgfGridEventArgs> arg)
     {
+        var rowData = arg.Args.RowData ?? throw new ArgumentException();
         foreach (var prop in EntityDesc.SortedVisibleColumns)
         {
-            var attr = rowData.Value["__attributes"] as RgfDynamicDictionary;
+            var attr = rowData["__attributes"] as RgfDynamicDictionary;
             if (attr != null)
             {
                 string? propAttr = null;
