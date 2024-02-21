@@ -24,9 +24,9 @@ public static class RGFClientBlazorSyncfusionConfiguration
     {
         var libName = Assembly.GetExecutingAssembly().GetName().Name;
 
-        await jsRuntime.InvokeVoidAsync("import", $"{RgfClientConfiguration.AppRootUrl}_content/Syncfusion.Blazor.Core/scripts/syncfusion-blazor.min.js");
-        await jsRuntime.InvokeVoidAsync("Recrovit.LPUtils.AddStyleSheetLink", $"{RgfClientConfiguration.AppRootUrl}_content/{libName}/lib/bootstrap/dist/css/bootstrap.min.css", false, BootstrapCssId);
-        await jsRuntime.InvokeVoidAsync("Recrovit.LPUtils.AddStyleSheetLink", $"{RgfClientConfiguration.AppRootUrl}_content/Syncfusion.Blazor.Themes/{themeName}.css", false, SyncfusionThemeId);
+        await jsRuntime.InvokeVoidAsync("import", $"{RgfClientConfiguration.AppRootPath}_content/Syncfusion.Blazor.Core/scripts/syncfusion-blazor.min.js");
+        await jsRuntime.InvokeVoidAsync("Recrovit.LPUtils.AddStyleSheetLink", $"{RgfClientConfiguration.AppRootPath}_content/{libName}/lib/bootstrap/dist/css/bootstrap.min.css", false, BootstrapCssId);
+        await jsRuntime.InvokeVoidAsync("Recrovit.LPUtils.AddStyleSheetLink", $"{RgfClientConfiguration.AppRootPath}_content/Syncfusion.Blazor.Themes/{themeName}.css", false, SyncfusionThemeId);
     }
 
     public static async Task UnloadResourcesAsync(IJSRuntime jsRuntime)
@@ -35,7 +35,7 @@ public static class RGFClientBlazorSyncfusionConfiguration
         await jsRuntime.InvokeVoidAsync("eval", $"document.getElementById('{SyncfusionThemeId}')?.remove();");
 
         var libName = Assembly.GetExecutingAssembly().GetName().Name;
-        await jsRuntime.InvokeVoidAsync("Recrovit.LPUtils.RemoveLinkedFile", $"{RgfClientConfiguration.AppRootUrl}_content/{libName}/css/syncfusion-dark-theme.min.css", "stylesheet");
+        await jsRuntime.InvokeVoidAsync("Recrovit.LPUtils.RemoveLinkedFile", $"{RgfClientConfiguration.AppRootPath}_content/{libName}/css/syncfusion-dark-theme.min.css", "stylesheet");
         await jsRuntime.InvokeVoidAsync("eval", "document.getElementsByTagName('body')[0].removeAttribute('class');");
     }
 

@@ -1,6 +1,6 @@
 ﻿@using Syncfusion.Blazor.Popups
 
-<RgfGridColumnSettingsComponent GridComponent="GridComponent">
+<RgfGridColumnSettingsComponent BaseGridComponent="BaseGridComponent">
     <SettingsTemplate Context="RgfColSettings">
         <table class="tablesorter">
             <thead>
@@ -32,7 +32,7 @@
 @code {
 
     [Parameter, EditorRequired]
-    public RgfGridComponent GridComponent { get; set; } = null!;
+    public RgfGridComponent BaseGridComponent { get; set; } = null!;
 
-    private IRecroDictService RecroDict => GridComponent.Manager.RecroDict;
+    private IRecroDictService RecroDict => BaseGridComponent.Manager.RecroDict;
 }

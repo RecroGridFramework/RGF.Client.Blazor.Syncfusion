@@ -5,6 +5,14 @@
     <ToolbarTemplate Context="RgfToolbar">
         <SfToolbar CssClass="e-grid">
             <ToolbarItems>
+                @if (RgfToolbar.CustomMenu != null)
+                {
+                    <ToolbarItem TooltipText="@RecroDict.GetRgfUiString("CustomFunctions")">
+                        <Template>
+                            @RgfToolbar.CreateCustomMenu("e-icons e-list-unordered")
+                        </Template>
+                    </ToolbarItem>
+                }
                 @if (Manager.EntityDesc.Options.GetBoolValue("RGO_ClientMode") != true)
                 {
                     <ToolbarItem PrefixIcon="e-refresh" TooltipText="@RecroDict.GetRgfUiString("Refresh")"

@@ -51,13 +51,19 @@ else if (_menuItems != null)
                 var menu = new RgfMenu()
                     {
                         MenuType = RgfMenuType.Menu,
-                        Icon = MenuParameters.Icon.ToString(),
                         NestedMenu = MenuParameters.MenuItems
                     };
+                if (MenuParameters.Icon != null)
+                {
+                    menu.Icon = MenuParameters.Icon.ToString();
+                }
                 _menuItems = new List<RgfMenu>() { menu };
             }
         }
-        await InitializeAsync(_menuItems);
+        if (_menuItems != null)
+        {
+            await InitializeAsync(_menuItems);
+        }
         _initialized = true;
     }
 
