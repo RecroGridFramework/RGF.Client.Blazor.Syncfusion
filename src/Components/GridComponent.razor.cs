@@ -17,7 +17,6 @@ public partial class GridComponent : ComponentBase
     [Inject]
     private IJSRuntime _jsRuntime { get; set; } = null!;
 
-
     private RgfGridComponent _rgfGridRef { get; set; } = null!;
 
     private SfGrid<RgfDynamicDictionary> _sfGridRef { get; set; } = null!;
@@ -35,22 +34,20 @@ public partial class GridComponent : ComponentBase
         var rowData = arg.Args.RowData ?? throw new ArgumentException();
         foreach (var prop in EntityDesc.SortedVisibleColumns)
         {
-            var attr = rowData["__attributes"] as RgfDynamicDictionary;
-            if (attr != null)
+            string? propClass = null;
+            if (prop.FormType == PropertyFormType.CheckBox)
             {
-                string? propAttr = null;
-                if (prop.FormType == PropertyFormType.CheckBox)
-                {
-                    propAttr = " text-center";
-                }
-                else if (prop.ListType == PropertyListType.Numeric)
-                {
-                    propAttr = " text-end";
-                }
-                if (propAttr != null)
-                {
-                    attr[$"class-{prop.Alias}"] += propAttr;
-                }
+                propClass = "text-center";
+            }
+            else if (prop.ListType == PropertyListType.Numeric)
+            {
+                propClass = "text-end";
+            }
+            if (propClass != null)
+            {
+                var attributes = rowData.GetOrNew<RgfDynamicDictionary>("__attributes");
+                var propAttributes = attributes.GetOrNew<RgfDynamicDictionary>(prop.Alias);
+                propAttributes.Set<string>("class", (old) => string.IsNullOrEmpty(old) ? propClass : $"{old.Trim()} {propClass}");
             }
         }
         return Task.CompletedTask;
@@ -59,16 +56,19 @@ public partial class GridComponent : ComponentBase
     protected virtual Task RowDataBound(RowDataBoundEventArgs<RgfDynamicDictionary> args)
     {
         var rowData = args.Data;
-        var attributes = (RgfDynamicDictionary)rowData["__attributes"];
-        var attr = attributes.GetItemData("class").StringValue;
-        if (attr != null)
+        var attributes = rowData.Get<RgfDynamicDictionary>("__attributes");
+        if (attributes != null)
         {
-            args.Row.AddClass(attr.Split(' ').ToArray());
-        }
-        attr = attributes.GetItemData("style").StringValue;
-        if (attr != null)
-        {
-            args.Row.AddStyle(attr.Split(';').ToArray());
+            var attr = attributes.Get<string>("class");
+            if (attr != null)
+            {
+                args.Row.AddClass(attr.Split(' ').ToArray());
+            }
+            attr = attributes.Get<string>("style");
+            if (attr != null)
+            {
+                args.Row.AddStyle(attr.Split(';').ToArray());
+            }
         }
         return Task.CompletedTask;
     }
@@ -79,16 +79,23 @@ public partial class GridComponent : ComponentBase
         if (prop?.ColPos > 0)
         {
             var rowData = args.Data;
-            var attributes = (RgfDynamicDictionary)rowData["__attributes"];
-            var attr = attributes.GetItemData($"class-{prop.Alias}").StringValue;
-            if (attr != null)
+            var attributes = rowData.Get<RgfDynamicDictionary>("__attributes");
+            if (attributes != null)
             {
-                args.Cell.AddClass(attr.Split(' ').ToArray());
-            }
-            attr = attributes.GetItemData($"style-{prop.Alias}").StringValue;
-            if (attr != null)
-            {
-                args.Cell.AddStyle(attr.Split(';').ToArray());
+                var propAttributes = attributes.Get<RgfDynamicDictionary>(prop.Alias);
+                if (propAttributes != null)
+                {
+                    var attr = propAttributes.Get<string>("class");
+                    if (attr != null)
+                    {
+                        args.Cell.AddClass(attr.Split(' ').ToArray());
+                    }
+                    attr = propAttributes.Get<string>("style");
+                    if (attr != null)
+                    {
+                        args.Cell.AddStyle(attr.Split(';').ToArray());
+                    }
+                }
             }
         }
         return Task.CompletedTask;
