@@ -26,7 +26,7 @@ public partial class GridComponent : ComponentBase
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        GridParameters.EventDispatcher.Subscribe(RgfGridEventKind.CreateAttributes, OnCreateAttributes);
+        GridParameters.EventDispatcher.Subscribe(RgfGridEventKind.CreateRowData, OnCreateAttributes);
     }
 
     protected virtual Task OnCreateAttributes(IRgfEventArgs<RgfGridEventArgs> arg)
