@@ -31,6 +31,7 @@ public partial class GridComponent : ComponentBase
 
     protected virtual Task OnCreateAttributes(IRgfEventArgs<RgfGridEventArgs> arg)
     {
+        _logger.LogDebug("CreateAttributes");
         var rowData = arg.Args.RowData ?? throw new ArgumentException();
         foreach (var prop in EntityDesc.SortedVisibleColumns)
         {
