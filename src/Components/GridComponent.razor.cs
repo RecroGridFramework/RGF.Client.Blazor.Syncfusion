@@ -5,11 +5,12 @@ using Recrovit.RecroGridFramework.Abstraction.Contracts.Services;
 using Recrovit.RecroGridFramework.Abstraction.Models;
 using Recrovit.RecroGridFramework.Client.Blazor.Components;
 using Recrovit.RecroGridFramework.Client.Blazor.Events;
+using Recrovit.RecroGridFramework.Client.Events;
 using Syncfusion.Blazor.Grids;
 
 namespace Recrovit.RecroGridFramework.Client.Blazor.SyncfusionUI.Components;
 
-public partial class GridComponent : ComponentBase
+public partial class GridComponent : ComponentBase, IDisposable
 {
     [Inject]
     private ILogger<GridComponent> _logger { get; set; } = null!;
@@ -21,12 +22,32 @@ public partial class GridComponent : ComponentBase
 
     private SfGrid<RgfDynamicDictionary> _sfGridRef { get; set; } = null!;
 
+    private List<IDisposable> _disposables { get; set; } = new();
+
     private RgfEntity EntityDesc => Manager.EntityDesc;
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
         GridParameters.EventDispatcher.Subscribe(RgfGridEventKind.CreateRowData, OnCreateAttributes);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+        if (firstRender)
+        {
+            _disposables.Add(Manager.NotificationManager.Subscribe<RgfToolbarEventArgs>(this, OnToolbarCommand));
+        }
+    }
+
+    public void Dispose()
+    {
+        if (_disposables != null)
+        {
+            _disposables.ForEach(disposable => disposable.Dispose());
+            _disposables = null!;
+        }
     }
 
     protected virtual Task OnCreateAttributes(IRgfEventArgs<RgfGridEventArgs> arg)
@@ -125,4 +146,21 @@ public partial class GridComponent : ComponentBase
     protected virtual Task RowDeselectHandler(RowDeselectEventArgs<RgfDynamicDictionary> args) => _rgfGridRef.RowDeselectHandlerAsync(args.Data);
 
     protected virtual Task OnRecordDoubleClick(RecordDoubleClickEventArgs<RgfDynamicDictionary> args) => _rgfGridRef.OnRecordDoubleClickAsync(args.RowData);
+ 
+    private void OnToolbarCommand(IRgfEventArgs<RgfToolbarEventArgs> arg)
+    {
+        switch (arg.Args.Command)
+        {
+            case ToolbarAction.Edit:
+            case ToolbarAction.Read:
+                var data = _rgfGridRef.SelectedItems.Single();
+                int rowIndex = Manager.ListHandler.GetRelativeRowIndex(data);
+                if (rowIndex != -1)
+                {
+                    _sfGridRef.ClearSelectionAsync();
+                    _sfGridRef.SelectRowAsync(rowIndex);
+                }
+                break;
+        }
+    }
 }
