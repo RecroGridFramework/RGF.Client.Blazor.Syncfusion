@@ -4,7 +4,6 @@ using Microsoft.JSInterop;
 using Recrovit.RecroGridFramework.Abstraction.Contracts.Services;
 using Recrovit.RecroGridFramework.Abstraction.Models;
 using Recrovit.RecroGridFramework.Client.Blazor.Components;
-using Recrovit.RecroGridFramework.Client.Blazor.Events;
 using Recrovit.RecroGridFramework.Client.Events;
 using Syncfusion.Blazor.Grids;
 
@@ -29,7 +28,7 @@ public partial class GridComponent : ComponentBase, IDisposable
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        GridParameters.EventDispatcher.Subscribe(RgfGridEventKind.CreateRowData, OnCreateAttributes);
+        GridParameters.EventDispatcher.Subscribe(RgfListEventKind.CreateRowData, OnCreateAttributes);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -50,10 +49,10 @@ public partial class GridComponent : ComponentBase, IDisposable
         }
     }
 
-    protected virtual Task OnCreateAttributes(IRgfEventArgs<RgfGridEventArgs> arg)
+    protected virtual Task OnCreateAttributes(IRgfEventArgs<RgfListEventArgs> arg)
     {
         _logger.LogDebug("CreateAttributes");
-        var rowData = arg.Args.RowData ?? throw new ArgumentException();
+        var rowData = arg.Args.Data ?? throw new ArgumentException();
         foreach (var prop in EntityDesc.SortedVisibleColumns)
         {
             string? propClass = null;
