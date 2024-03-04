@@ -21,8 +21,6 @@ public partial class GridComponent : ComponentBase, IDisposable
 
     private SfGrid<RgfDynamicDictionary> _sfGridRef { get; set; } = null!;
 
-    private List<IDisposable> _disposables { get; set; } = new();
-
     private RgfEntity EntityDesc => Manager.EntityDesc;
 
     protected override void OnInitialized()
@@ -36,17 +34,13 @@ public partial class GridComponent : ComponentBase, IDisposable
         await base.OnAfterRenderAsync(firstRender);
         if (firstRender)
         {
-            _disposables.Add(Manager.NotificationManager.Subscribe<RgfToolbarEventArgs>(this, OnToolbarCommand));
+            _rgfGridRef.EntityParameters.ToolbarParameters.EventDispatcher.Subscribe([RgfToolbarEventKind.Read, RgfToolbarEventKind.Edit], OnSetFormItem);
         }
     }
 
     public void Dispose()
     {
-        if (_disposables != null)
-        {
-            _disposables.ForEach(disposable => disposable.Dispose());
-            _disposables = null!;
-        }
+        _rgfGridRef.EntityParameters.ToolbarParameters.EventDispatcher.Unsubscribe([RgfToolbarEventKind.Read, RgfToolbarEventKind.Edit], OnSetFormItem);
     }
 
     protected virtual Task OnCreateAttributes(IRgfEventArgs<RgfListEventArgs> arg)
@@ -145,21 +139,15 @@ public partial class GridComponent : ComponentBase, IDisposable
     protected virtual Task RowDeselectHandler(RowDeselectEventArgs<RgfDynamicDictionary> args) => _rgfGridRef.RowDeselectHandlerAsync(args.Data);
 
     protected virtual Task OnRecordDoubleClick(RecordDoubleClickEventArgs<RgfDynamicDictionary> args) => _rgfGridRef.OnRecordDoubleClickAsync(args.RowData);
- 
-    private void OnToolbarCommand(IRgfEventArgs<RgfToolbarEventArgs> arg)
+
+    private void OnSetFormItem(IRgfEventArgs<RgfToolbarEventArgs> arg)
     {
-        switch (arg.Args.Command)
+        var data = _rgfGridRef.SelectedItems.Single();
+        int rowIndex = Manager.ListHandler.GetRelativeRowIndex(data);
+        if (rowIndex != -1)
         {
-            case ToolbarAction.Edit:
-            case ToolbarAction.Read:
-                var data = _rgfGridRef.SelectedItems.Single();
-                int rowIndex = Manager.ListHandler.GetRelativeRowIndex(data);
-                if (rowIndex != -1)
-                {
-                    _sfGridRef.ClearSelectionAsync();
-                    _sfGridRef.SelectRowAsync(rowIndex);
-                }
-                break;
+            _sfGridRef.ClearSelectionAsync();
+            _sfGridRef.SelectRowAsync(rowIndex);
         }
     }
 }
