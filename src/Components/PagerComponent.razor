@@ -1,5 +1,4 @@
-﻿
-<RgfPagerComponent @ref="_rgfPagerRef" EntityParameters="EntityParameters">
+﻿<RgfPagerComponent @ref="_rgfPagerRef" EntityParameters="EntityParameters">
     <PagerTemplate Context="RgfPager">
         <div class="e-pager">
             @if (RgfPager.ItemCount != 0)
@@ -61,6 +60,7 @@
 
 </style>
 
+@inject IRecroDictService RecroDict
 @code {
 
     [Parameter, EditorRequired]
@@ -68,7 +68,6 @@
 
     private IRgManager Manager => EntityParameters.Manager!;
     private RgfPagerParameters PagerParameters { get => EntityParameters.PagerParameters; }
-    private IRecroDictService RecroDict => Manager.RecroDict;
 
     private RgfPagerComponent _rgfPagerRef { get; set; } = null!;
 
