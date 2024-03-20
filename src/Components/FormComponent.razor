@@ -64,6 +64,7 @@
 
 </style>
 
+@inject IRecroDictService RecroDict
 @code {
 
     [Parameter, EditorRequired]
@@ -71,7 +72,6 @@
 
     private IRgManager Manager => EntityParameters.Manager!;
     private RgfFormParameters FormParameters { get => EntityParameters.FormParameters; }
-    protected IRecroDictService RecroDict => Manager.RecroDict;
 
     private RgfFormComponent _rgfFormRef { get; set; } = null!;
     public int ActiveTabIndex { get; set; } = 0;
@@ -82,6 +82,25 @@
         base.OnInitialized();
         FormParameters.ErrorCssClass = FormParameters.ErrorCssClass ?? "e-error";
         FormParameters.ModifiedCssClass = FormParameters.ModifiedCssClass ?? "e-success";
+    }
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        var rowIndex = FormParameters.FormViewKey.RowIndex;
+        if (rowIndex != -1)
+        {
+            var buttons = new List<ButtonParameters>() {
+                new(nameof(IconName.ChevronLeftDouble), RecroDict.GetRgfUiString("First"), async (arg) => await _rgfFormRef.FirstFormItemAsync()) { Disabled = rowIndex <= 0 },
+                new(nameof(IconName.ChevronLeft), RecroDict.GetRgfUiString("Prev"), async (arg) => await _rgfFormRef.PrevFormItemAsync()) { Disabled = rowIndex <= 0 },
+                new(nameof(IconName.ChevronRight), RecroDict.GetRgfUiString("Next"), async (arg) => await _rgfFormRef.NextFormItemAsync()) { Disabled = rowIndex + 1 >= Manager.ItemCount.Value },
+                new(nameof(IconName.ChevronRightDouble), RecroDict.GetRgfUiString("Last"), async (arg) => await _rgfFormRef.LastFormItemAsync()) { Disabled = rowIndex + 1 >= Manager.ItemCount.Value } };
+            FormParameters.DialogParameters.LeftButtons = buttons;
+        }
+        else
+        {
+            FormParameters.DialogParameters.LeftButtons = null;
+        }
     }
 
     public RenderFragment<RgfFormGroupLayoutParameters> FormGroupLayoutTemplate => (param) =>

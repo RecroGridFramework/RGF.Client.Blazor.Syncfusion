@@ -4,19 +4,18 @@ using Microsoft.JSInterop;
 using Recrovit.RecroGridFramework.Abstraction.Contracts.Services;
 using Recrovit.RecroGridFramework.Abstraction.Models;
 using Recrovit.RecroGridFramework.Client.Blazor.Components;
-using Recrovit.RecroGridFramework.Client.Blazor.Events;
+using Recrovit.RecroGridFramework.Client.Events;
 using Syncfusion.Blazor.Grids;
 
 namespace Recrovit.RecroGridFramework.Client.Blazor.SyncfusionUI.Components;
 
-public partial class GridComponent : ComponentBase
+public partial class GridComponent : ComponentBase, IDisposable
 {
     [Inject]
     private ILogger<GridComponent> _logger { get; set; } = null!;
 
     [Inject]
     private IJSRuntime _jsRuntime { get; set; } = null!;
-
 
     private RgfGridComponent _rgfGridRef { get; set; } = null!;
 
@@ -27,30 +26,43 @@ public partial class GridComponent : ComponentBase
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        GridParameters.EventDispatcher.Subscribe(RgfGridEventKind.CreateAttributes, OnCreateAttributes);
+        GridParameters.EventDispatcher.Subscribe(RgfListEventKind.CreateRowData, OnCreateAttributes);
     }
 
-    protected virtual Task OnCreateAttributes(IRgfEventArgs<RgfGridEventArgs> arg)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        var rowData = arg.Args.RowData ?? throw new ArgumentException();
+        await base.OnAfterRenderAsync(firstRender);
+        if (firstRender)
+        {
+            _rgfGridRef.EntityParameters.ToolbarParameters.EventDispatcher.Subscribe([RgfToolbarEventKind.Read, RgfToolbarEventKind.Edit], OnSetFormItem);
+        }
+    }
+
+    public void Dispose()
+    {
+        _rgfGridRef.EntityParameters.ToolbarParameters.EventDispatcher.Unsubscribe([RgfToolbarEventKind.Read, RgfToolbarEventKind.Edit], OnSetFormItem);
+    }
+
+    protected virtual Task OnCreateAttributes(IRgfEventArgs<RgfListEventArgs> arg)
+    {
+        _logger.LogDebug("CreateAttributes");
+        var rowData = arg.Args.Data ?? throw new ArgumentException();
         foreach (var prop in EntityDesc.SortedVisibleColumns)
         {
-            var attr = rowData["__attributes"] as RgfDynamicDictionary;
-            if (attr != null)
+            string? propClass = null;
+            if (prop.FormType == PropertyFormType.CheckBox)
             {
-                string? propAttr = null;
-                if (prop.FormType == PropertyFormType.CheckBox)
-                {
-                    propAttr = " text-center";
-                }
-                else if (prop.ListType == PropertyListType.Numeric)
-                {
-                    propAttr = " text-end";
-                }
-                if (propAttr != null)
-                {
-                    attr[$"class-{prop.Alias}"] += propAttr;
-                }
+                propClass = "text-center";
+            }
+            else if (prop.ListType == PropertyListType.Numeric)
+            {
+                propClass = "text-end";
+            }
+            if (propClass != null)
+            {
+                var attributes = rowData.GetOrNew<RgfDynamicDictionary>("__attributes");
+                var propAttributes = attributes.GetOrNew<RgfDynamicDictionary>(prop.Alias);
+                propAttributes.Set<string>("class", (old) => string.IsNullOrEmpty(old) ? propClass : $"{old.Trim()} {propClass}");
             }
         }
         return Task.CompletedTask;
@@ -59,16 +71,19 @@ public partial class GridComponent : ComponentBase
     protected virtual Task RowDataBound(RowDataBoundEventArgs<RgfDynamicDictionary> args)
     {
         var rowData = args.Data;
-        var attributes = (RgfDynamicDictionary)rowData["__attributes"];
-        var attr = attributes.GetItemData("class").StringValue;
-        if (attr != null)
+        var attributes = rowData.Get<RgfDynamicDictionary>("__attributes");
+        if (attributes != null)
         {
-            args.Row.AddClass(attr.Split(' ').ToArray());
-        }
-        attr = attributes.GetItemData("style").StringValue;
-        if (attr != null)
-        {
-            args.Row.AddStyle(attr.Split(';').ToArray());
+            var attr = attributes.Get<string>("class");
+            if (attr != null)
+            {
+                args.Row.AddClass(attr.Split(' ').ToArray());
+            }
+            attr = attributes.Get<string>("style");
+            if (attr != null)
+            {
+                args.Row.AddStyle(attr.Split(';').ToArray());
+            }
         }
         return Task.CompletedTask;
     }
@@ -79,16 +94,23 @@ public partial class GridComponent : ComponentBase
         if (prop?.ColPos > 0)
         {
             var rowData = args.Data;
-            var attributes = (RgfDynamicDictionary)rowData["__attributes"];
-            var attr = attributes.GetItemData($"class-{prop.Alias}").StringValue;
-            if (attr != null)
+            var attributes = rowData.Get<RgfDynamicDictionary>("__attributes");
+            if (attributes != null)
             {
-                args.Cell.AddClass(attr.Split(' ').ToArray());
-            }
-            attr = attributes.GetItemData($"style-{prop.Alias}").StringValue;
-            if (attr != null)
-            {
-                args.Cell.AddStyle(attr.Split(';').ToArray());
+                var propAttributes = attributes.Get<RgfDynamicDictionary>(prop.Alias);
+                if (propAttributes != null)
+                {
+                    var attr = propAttributes.Get<string>("class");
+                    if (attr != null)
+                    {
+                        args.Cell.AddClass(attr.Split(' ').ToArray());
+                    }
+                    attr = propAttributes.Get<string>("style");
+                    if (attr != null)
+                    {
+                        args.Cell.AddStyle(attr.Split(';').ToArray());
+                    }
+                }
             }
         }
         return Task.CompletedTask;
@@ -117,4 +139,15 @@ public partial class GridComponent : ComponentBase
     protected virtual Task RowDeselectHandler(RowDeselectEventArgs<RgfDynamicDictionary> args) => _rgfGridRef.RowDeselectHandlerAsync(args.Data);
 
     protected virtual Task OnRecordDoubleClick(RecordDoubleClickEventArgs<RgfDynamicDictionary> args) => _rgfGridRef.OnRecordDoubleClickAsync(args.RowData);
+
+    private void OnSetFormItem(IRgfEventArgs<RgfToolbarEventArgs> arg)
+    {
+        var data = _rgfGridRef.SelectedItems.Single();
+        int rowIndex = Manager.ListHandler.GetRelativeRowIndex(data);
+        if (rowIndex != -1)
+        {
+            _sfGridRef.ClearSelectionAsync();
+            _sfGridRef.SelectRowAsync(rowIndex);
+        }
+    }
 }

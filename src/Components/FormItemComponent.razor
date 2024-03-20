@@ -24,7 +24,7 @@
                                        CssClass="@RgfFormItem.CssClass" ID="@Id" />
                         </div>
                         <div class="col-1">
-                            <SfButton type="button" IsPrimary="true" CssClass="e-small e-outline" OnClick="() => RgfFormItem.OnSearchEntity(ItemData.StringValue)">
+                            <SfButton type="button" IsPrimary="true" CssClass="e-small e-outline" OnClick="async () => await RgfFormItem.FindEntityAsync(ItemData.StringValue)">
                                 <SfIcon Name="IconName.Search" Size="IconSize.Medium" />
                             </SfButton>
                         </div>
@@ -139,7 +139,11 @@
                     }
                     else if (FormComponent.PreviouslyActiveTabs.Contains(PropertyDesc.FormTab - 1) || FormComponent.ActiveTabIndex == PropertyDesc.FormTab - 1)
                     {
-                        @RgfEntityComponent.Create(new RgfEntityParameters(Property.ForeignEntity.EntityName, BaseFormComponent.Manager.SessionParams) { GridId = ItemData.StringValue })
+                        if (_embeddedGrid == null)
+                        {
+                            _embeddedGrid = RgfEntityComponent.Create(new RgfEntityParameters(Property.ForeignEntity.EntityName, BaseFormComponent.Manager.SessionParams) { GridId = ItemData.StringValue });
+                        }
+                        @_embeddedGrid
                     }
                 </div>
                 break;
@@ -169,6 +173,7 @@
     protected RgfDynamicData ItemData => FormItemParameters.ItemData;
 
     protected RgfProperty PropertyDesc => Property.PropertyDesc;
+    private RenderFragment? _embeddedGrid;
     protected string Id { get; set; } = DynamicComponentWrapper.GetNextId();
 
     private List<ToolbarItemModel> Tools = new List<ToolbarItemModel>()

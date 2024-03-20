@@ -20,18 +20,18 @@
             </div>
             <div class="p-2">
                 <SfCheckBox @bind-Checked=RgfFilterComp.PredefinedFilter.IsGlobal
-                            Disabled="!Manager.RecroSec.IsAdmin" Label="@RecroDict.GetRgfUiString("Public")" LabelPosition="Syncfusion.Blazor.Buttons.LabelPosition.Before" />
+                            Disabled="!RgfFilterComp.IsPredefinedFilterAdmin" Label="@RecroDict.GetRgfUiString("Public")" LabelPosition="Syncfusion.Blazor.Buttons.LabelPosition.Before" />
             </div>
             <div class="pt-2 pb-2">
                 <SfButton CssClass="e-small" HtmlAttributes="@(new Dictionary<string, object>() { {"type", "button"}, { "title", @RecroDict.GetRgfUiString("Save")} })"
-                          Disabled="string.IsNullOrEmpty(RgfFilterComp.PredefinedFilter.Name) || !Manager.RecroSec.IsAdmin && RgfFilterComp.PredefinedFilter.IsGlobal"
+                          Disabled="string.IsNullOrEmpty(RgfFilterComp.PredefinedFilter.Name) || !RgfFilterComp.IsPredefinedFilterAdmin && RgfFilterComp.PredefinedFilter.IsGlobal"
                           OnClick="() => RgfFilterComp.OnSavePredefinedFilter()">
                     <SfIcon Name="IconName.Save" Size="IconSize.Medium" />
                 </SfButton>
             </div>
             <div class="pt-2 pb-2">
                 <SfButton CssClass="e-small" HtmlAttributes="@(new Dictionary<string, object>() { {"type", "button"}, { "title", @RecroDict.GetRgfUiString("Delete")} })"
-                          Disabled="string.IsNullOrEmpty(RgfFilterComp.PredefinedFilter.Key) || !Manager.RecroSec.IsAdmin && RgfFilterComp.PredefinedFilter.IsGlobal"
+                          Disabled="string.IsNullOrEmpty(RgfFilterComp.PredefinedFilter.Key) || !RgfFilterComp.IsPredefinedFilterAdmin && RgfFilterComp.PredefinedFilter.IsGlobal"
                           OnClick="() => RgfFilterComp.OnDeletePredefinedFilter()">
                     <SfIcon Name="IconName.Trash" Size="IconSize.Medium" />
                 </SfButton>
@@ -77,6 +77,7 @@
 
 </style>
 
+@inject IRecroDictService RecroDict
 @code {
 
     [Parameter, EditorRequired]
@@ -84,5 +85,4 @@
 
     private IRgManager Manager => EntityParameters.Manager!;
     private RgfFilterParameters FilterParameters { get => EntityParameters.FilterParameters; }
-    private IRecroDictService RecroDict => Manager.RecroDict;
 }

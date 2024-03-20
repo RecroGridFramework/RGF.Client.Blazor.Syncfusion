@@ -16,21 +16,21 @@
                 @if (Manager.EntityDesc.Options.GetBoolValue("RGO_ClientMode") != true)
                 {
                     <ToolbarItem PrefixIcon="e-refresh" TooltipText="@RecroDict.GetRgfUiString("Refresh")"
-                                 OnClick="(arg) => RgfToolbar.OnToolbarCommand(ToolbarAction.Refresh)" />
+                                 OnClick="(arg) => RgfToolbar.OnToolbarCommand(RgfToolbarEventKind.Refresh)" />
                     if (Manager.EntityDesc.Options.GetBoolValue("RGO_NoFilter") != true)
                     {
                         <ToolbarItem PrefixIcon="@(RgfToolbar.IsFiltered ? "e-filter e-filtered" : "e-filter")" TooltipText="@RecroDict.GetRgfUiString("Filter")"
-                                     OnClick="(arg) => RgfToolbar.OnToolbarCommand(ToolbarAction.ShowFilter)" />
+                                     OnClick="(arg) => RgfToolbar.OnToolbarCommand(RgfToolbarEventKind.ShowFilter)" />
                     }
                 }
                 @if (Manager.EntityDesc.Options.GetBoolValue("RGO_NoDetails") != true)
                 {
                     <ToolbarItem PrefixIcon="e-add" Visible="RgfToolbar.BasePermissions.Add" TooltipText="@RecroDict.GetRgfUiString("New")" Disabled="false"
-                                 OnClick="(arg) => RgfToolbar.OnToolbarCommand(ToolbarAction.Add)" />
+                                 OnClick="(arg) => RgfToolbar.OnToolbarCommand(RgfToolbarEventKind.Add)" />
                     <ToolbarItem PrefixIcon="e-edit" Visible="RgfToolbar.BasePermissions.Edit" TooltipText="@RecroDict.GetRgfUiString("Modify")" Disabled="!RgfToolbar.IsSingleSelectedRow"
-                                 OnClick="(arg) => RgfToolbar.OnToolbarCommand(ToolbarAction.Edit)" />
+                                 OnClick="(arg) => RgfToolbar.OnToolbarCommand(RgfToolbarEventKind.Edit)" />
                     <ToolbarItem PrefixIcon="e-description" Visible="!RgfToolbar.BasePermissions.Edit && RgfToolbar.BasePermissions.Read" TooltipText="@RecroDict.GetRgfUiString("Details")" Disabled="!RgfToolbar.IsSingleSelectedRow"
-                                 OnClick="(arg) => RgfToolbar.OnToolbarCommand(ToolbarAction.Read)" />
+                                 OnClick="(arg) => RgfToolbar.OnToolbarCommand(RgfToolbarEventKind.Read)" />
                 }
                 <ToolbarItem PrefixIcon="e-delete" Visible="RgfToolbar.BasePermissions.Delete" TooltipText="@RecroDict.GetRgfUiString("Delete")" Disabled="!RgfToolbar.IsSingleSelectedRow"
                              OnClick="(arg) => RgfToolbar.OnDelete()" />
@@ -45,13 +45,14 @@
                 @if (RgfToolbar.SelectParam != null && Manager.EntityDesc.Options.GetBoolValue("RGO_SelectMode") == true)
                 {
                     <ToolbarItem Type="ItemType.Separator" />
-                    <ToolbarItem PrefixIcon="e-replace" TooltipText="@RecroDict.GetRgfUiString("Select")" Disabled="!RgfToolbar.IsSingleSelectedRow" OnClick="(arg) => RgfToolbar.OnToolbarCommand(ToolbarAction.Select)" />
+                    <ToolbarItem PrefixIcon="e-replace" TooltipText="@RecroDict.GetRgfUiString("Select")" Disabled="!RgfToolbar.IsSingleSelectedRow" OnClick="(arg) => RgfToolbar.OnToolbarCommand(RgfToolbarEventKind.Select)" />
                 }
             </ToolbarItems>
         </SfToolbar>
     </ToolbarTemplate>
 </RgfToolbarComponent>
 
+@inject IRecroDictService RecroDict
 @code {
 
     [Parameter, EditorRequired]
@@ -59,7 +60,6 @@
 
     private IRgManager Manager => EntityParameters.Manager!;
     private RgfToolbarParameters ToolbarParameters { get => EntityParameters.ToolbarParameters; }
-    private IRecroDictService RecroDict => Manager.RecroDict;
 
     private RgfToolbarComponent _rgfToolbarRef { get; set; } = null!;
 }

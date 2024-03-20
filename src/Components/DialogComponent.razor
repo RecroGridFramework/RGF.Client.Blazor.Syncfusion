@@ -17,22 +17,20 @@
             {
                 @DialogParameters.FooterTemplate
             }
-            @if (DialogParameters.PredefinedButtons != null)
-            {
-                foreach (var button in DialogParameters.PredefinedButtons)
-                {
-                    <SfButton IsPrimary="button.IsPrimary" OnClick="button.Callback">
-                        @if (!string.IsNullOrEmpty(button.ChildText))
-                        {
-                            @button.ChildText
-                        }
-                        else if (button.ChildContent != null)
-                        {
-                            @button.ChildContent
-                        }
-                    </SfButton>
-                }
-            }
+            <div class="d-flex flex-wrap justify-content-between align-items-center">
+                <div class="d-flex justify-content-start">
+                    @foreach (var button in DialogParameters.LeftButtons ?? [])
+                    {
+                        @CreateButton(button)
+                    }
+                </div>
+                <div class="d-flex justify-content-end">
+                    @foreach (var button in DialogParameters.PredefinedButtons ?? [])
+                    {
+                        @CreateButton(button)
+                    }
+                </div>
+            </div>
         </FooterTemplate>
     </DialogTemplates>
     <DialogEvents OnClose="OnClose" />
@@ -42,6 +40,23 @@
 
     [Parameter, EditorRequired]
     public RgfDialogParameters DialogParameters { get; set; } = null!;
+
+    private RenderFragment<ButtonParameters> CreateButton => (button) =>
+    @<SfButton CssClass="@button.CssClass" HtmlAttributes="@(new Dictionary<string, object?>() { { "title", button.Title} })" IsPrimary="button.IsPrimary"
+                   Disabled="@button.Disabled" OnClick="button.Callback">
+        @if(!string.IsNullOrEmpty(button.IconName) && Enum.TryParse<IconName>(button.IconName, out IconName icon))
+    {
+        <SfIcon Name="@icon" />
+    }
+        @if (!string.IsNullOrEmpty(button.ChildText))
+    {
+        @button.ChildText
+    }
+    else if (button.ChildContent != null)
+    {
+        @button.ChildContent
+    }
+    </SfButton>;
 
     private void OnClose(BeforeCloseEventArgs args)
     {

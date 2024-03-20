@@ -1,5 +1,4 @@
-﻿
-<RgfPagerComponent @ref="_rgfPagerRef" EntityParameters="EntityParameters">
+﻿<RgfPagerComponent @ref="_rgfPagerRef" EntityParameters="EntityParameters">
     <PagerTemplate Context="RgfPager">
         <div class="e-pager">
             @if (RgfPager.ItemCount != 0)
@@ -36,7 +35,7 @@
                     <label class="ms-2 me-1">@RecroDict.GetRgfUiString("ItemsPerPage")</label>
                     @*The Value field in the ComboBox component must be of type string when the AllowCustom feature is enabled.*@
                     <SfComboBox class="ms-2" TValue="string" TItem="string" Value="@RgfPager.PageSize.ToString()" ValueChanged="RgfPager.PageSizeChanging" DataSource="@(new string[] { "5", "10", "15", "25" })"
-                                ShowClearButton="false" AllowCustom="true" CssClass="e-small" Width="4.5rem" />
+                                ShowClearButton="false" AllowCustom="true" CssClass="e-small" Width="auto" />
                 }
             }
             else
@@ -61,6 +60,7 @@
 
 </style>
 
+@inject IRecroDictService RecroDict
 @code {
 
     [Parameter, EditorRequired]
@@ -68,7 +68,6 @@
 
     private IRgManager Manager => EntityParameters.Manager!;
     private RgfPagerParameters PagerParameters { get => EntityParameters.PagerParameters; }
-    private IRecroDictService RecroDict => Manager.RecroDict;
 
     private RgfPagerComponent _rgfPagerRef { get; set; } = null!;
 
