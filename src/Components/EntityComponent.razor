@@ -5,7 +5,8 @@
                     GridTemplate="GridTemplate"
                     FilterTemplate="FilterTemplate"
                     PagerTemplate="PagerTemplate"
-                    FormTemplate="FormTemplate">
+                    FormTemplate="FormTemplate"
+                    ChartTemplate="ChartTemplate!">
     <LoadingIndicator>
         <div style="position:relative;width:100px;height:100px;">
             <SfSpinner Label="Loading..." Visible="true" />
@@ -32,4 +33,7 @@
 
     [Parameter]
     public RenderFragment<RgfEntityParameters> FormTemplate { get; set; } = (context) => @<FormComponent EntityParameters="context" />;
+
+    [Parameter]
+    public RenderFragment<RgfEntityParameters>? ChartTemplate { get; set; }
 }
