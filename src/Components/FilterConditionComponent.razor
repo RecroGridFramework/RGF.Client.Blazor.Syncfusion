@@ -50,44 +50,44 @@
                                 @switch (prop.ClientDataType)
                                 {
                                     case ClientDataType.Integer:
-                                        <SfNumericTextBox TValue="int?" @bind-Value="item.IntValue1" />
+                                        <SfNumericTextBox TValue="int?" @bind-Value="item.DynValue1.IntValue" />
                                         break;
 
                                     case ClientDataType.Decimal:
-                                        <SfNumericTextBox TValue="decimal?" @bind-Value="item.DecimalValue1" ShowSpinButton="false" />
+                                        <SfNumericTextBox TValue="decimal?" @bind-Value="item.DynValue1.DecimalValue" ShowSpinButton="false" />
                                         break;
 
                                     case ClientDataType.Double:
-                                        <SfNumericTextBox TValue="double?" @bind-Value="item.DoubleValue1" ShowSpinButton="false" />
+                                        <SfNumericTextBox TValue="double?" @bind-Value="item.DynValue1.DoubleValue" ShowSpinButton="false" />
                                         break;
 
                                     case ClientDataType.DateTime:
                                         if (prop.FormType == PropertyFormType.Date)
                                         {
-                                            <SfDatePicker TValue="DateTime?" ShowClearButton="true" @bind-Value="item.DateTimeValue1" Format="yyyy.MM.dd." />
+                                            <SfDatePicker TValue="DateTime?" ShowClearButton="true" @bind-Value="item.DynValue1.DateTimeValue" Format="yyyy.MM.dd." />
                                         }
                                         else
                                         {
-                                            <SfDateTimePicker TValue="DateTime?" ShowClearButton="true" @bind-Value="item.DateTimeValue1" Format="yyyy.MM.dd. HH:mm:ss" />
+                                            <SfDateTimePicker TValue="DateTime?" ShowClearButton="true" @bind-Value="item.DynValue1.DateTimeValue" Format="yyyy.MM.dd. HH:mm:ss" />
                                         }
                                         break;
 
                                     case ClientDataType.Boolean:
-                                        <SfCheckBox @bind-Checked="item.BooleanValue1" />
+                                        <SfCheckBox @bind-Checked="item.DynValue1.BooleanValue" />
                                         break;
 
                                     default:
                                         if (prop.FormType == PropertyFormType.DropDown || prop.FormType == PropertyFormType.ListBox)
                                         {
-                                            <SfListBox TValue="string[]" Value="item.StringArray1" TItem="RgfFilter.DictionaryItem" DataSource="prop.DictionaryItems">
+                                            <SfListBox TValue="string[]" Value="item.DynValue1.StringArray" TItem="RgfFilter.DictionaryItem" DataSource="prop.DictionaryItems">
                                                 <ListBoxSelectionSettings ShowCheckbox="true" Mode="Syncfusion.Blazor.DropDowns.SelectionMode.Multiple" />
-                                                <ListBoxEvents TValue="string[]" TItem="RgfFilter.DictionaryItem" ValueChange="(ListBoxChangeEventArgs<string[], RgfFilter.DictionaryItem> args) => item.StringArray1 = args.Value" />
+                                                <ListBoxEvents TValue="string[]" TItem="RgfFilter.DictionaryItem" ValueChange="(ListBoxChangeEventArgs<string[], RgfFilter.DictionaryItem> args) => item.DynValue1.StringArray = args.Value" />
                                                 <ListBoxFieldSettings Text="Value" Value="Key" />
                                             </SfListBox>
                                         }
                                         else
                                         {
-                                            <SfTextBox @bind-Value="item.StringValue1" />
+                                            <SfTextBox @bind-Value="item.DynValue1.StringValue" />
                                         }
                                         break;
                                 }
@@ -98,30 +98,30 @@
                                     @switch (prop.ClientDataType)
                                     {
                                         case ClientDataType.Integer:
-                                            <SfNumericTextBox TValue="int?" @bind-Value="item.IntValue2" />
+                                            <SfNumericTextBox TValue="int?" @bind-Value="item.DynValue2.IntValue" />
                                             break;
 
                                         case ClientDataType.Decimal:
-                                            <SfNumericTextBox TValue="decimal?" @bind-Value="item.DecimalValue2" ShowSpinButton="false" />
+                                            <SfNumericTextBox TValue="decimal?" @bind-Value="item.DynValue2.DecimalValue" ShowSpinButton="false" />
                                             break;
 
                                         case ClientDataType.Double:
-                                            <SfNumericTextBox TValue="double?" @bind-Value="item.DoubleValue2" ShowSpinButton="false" />
+                                            <SfNumericTextBox TValue="double?" @bind-Value="item.DynValue2.DoubleValue" ShowSpinButton="false" />
                                             break;
 
                                         case ClientDataType.DateTime:
                                             if (prop.FormType == PropertyFormType.Date)
                                             {
-                                                <SfDatePicker TValue="DateTime?" ShowClearButton="true" @bind-Value="item.DateTimeValue2" Format="yyyy.MM.dd." />
+                                                <SfDatePicker TValue="DateTime?" ShowClearButton="true" @bind-Value="item.DynValue2.DateTimeValue" Format="yyyy.MM.dd." />
                                             }
                                             else
                                             {
-                                                <SfDateTimePicker TValue="DateTime?" ShowClearButton="true" @bind-Value="item.DateTimeValue2" Format="yyyy.MM.dd. HH:mm:ss" />
+                                                <SfDateTimePicker TValue="DateTime?" ShowClearButton="true" @bind-Value="item.DynValue2.DateTimeValue" Format="yyyy.MM.dd. HH:mm:ss" />
                                             }
                                             break;
 
                                         default:
-                                            <SfTextBox @bind-Value="item.StringValue2" />
+                                            <SfTextBox @bind-Value="item.DynValue2.StringValue" />
                                             break;
                                     }
                                 </div>
