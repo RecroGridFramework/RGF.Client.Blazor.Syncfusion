@@ -15,7 +15,7 @@
                             DataSource="RgfFilterComp.FilterHandler.PredefinedFilters"
                             ValueChanged="(value) => RgfFilterComp.PredefinedFilterName = value">
                     <ComboBoxFieldSettings Value="Key" Text="Name" />
-                    <ComboBoxEvents TItem="RgfPredefinedFilter" TValue="string" ValueChange="(args) => RgfFilterComp.OnSetPredefinedFilter(args.Value)" />
+                    <ComboBoxEvents TItem="RgfPredefinedFilter" TValue="string" ValueChange="(args) => RgfFilterComp.OnSetPredefinedFilter(args.Value, args.Value)" />
                 </SfComboBox>
             </div>
             <div class="p-2">
