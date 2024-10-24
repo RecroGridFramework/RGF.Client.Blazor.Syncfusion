@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.JSInterop;
+using Recrovit.RecroGridFramework.Blazor.RgfApexCharts;
 using Recrovit.RecroGridFramework.Client.Blazor.SyncfusionUI.Components;
 using System.Reflection;
 
@@ -7,7 +8,7 @@ namespace Recrovit.RecroGridFramework.Client.Blazor.SyncfusionUI;
 
 public static class RGFClientBlazorSyncfusionConfiguration
 {
-    public static async Task InitializeRgfSyncfusionUIAsync(this IServiceProvider serviceProvider, string themeName = "bootstrap5", bool loadResources = true)
+    public static async Task InitializeRgfSyncfusionUIAsync(this IServiceProvider serviceProvider, string themeName = "bootstrap5", bool loadResources = true, bool shouldLoadBundledStyles = true)
     {
         RgfBlazorConfiguration.RegisterComponent<MenuComponent>(RgfBlazorConfiguration.ComponentType.Menu);
         RgfBlazorConfiguration.RegisterComponent<DialogComponent>(RgfBlazorConfiguration.ComponentType.Dialog);
@@ -16,11 +17,13 @@ public static class RGFClientBlazorSyncfusionConfiguration
         if (loadResources)
         {
             var jsRuntime = serviceProvider.GetRequiredService<IJSRuntime>();
-            await LoadResourcesAsync(jsRuntime, themeName);
+            await LoadResourcesAsync(jsRuntime, themeName, shouldLoadBundledStyles);
         }
+
+        await serviceProvider.InitializeRGFBlazorApexChartsAsync(loadResources, shouldLoadBundledStyles);
     }
 
-    public static async Task LoadResourcesAsync(IJSRuntime jsRuntime, string themeName)
+    public static async Task LoadResourcesAsync(IJSRuntime jsRuntime, string themeName, bool shouldLoadBundledStyles = true)
     {
         var libName = Assembly.GetExecutingAssembly().GetName().Name;
 
@@ -37,6 +40,8 @@ public static class RGFClientBlazorSyncfusionConfiguration
         var libName = Assembly.GetExecutingAssembly().GetName().Name;
         await jsRuntime.InvokeVoidAsync("Recrovit.LPUtils.RemoveLinkedFile", $"{RgfClientConfiguration.AppRootPath}_content/{libName}/css/syncfusion-dark-theme.min.css", "stylesheet");
         await jsRuntime.InvokeVoidAsync("eval", "document.getElementsByTagName('body')[0].removeAttribute('class');");
+
+        await RgfApexChartsConfiguration.UnloadResourcesAsync(jsRuntime);
     }
 
     private static readonly string BootstrapCssId = "syncfusion-bootstrap";

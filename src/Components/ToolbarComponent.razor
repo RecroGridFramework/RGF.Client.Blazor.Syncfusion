@@ -34,6 +34,11 @@
                 }
                 <ToolbarItem PrefixIcon="e-delete" Visible="RgfToolbar.BasePermissions.Delete" TooltipText="@RecroDict.GetRgfUiString("Delete")" Disabled="!RgfToolbar.IsSingleSelectedRow"
                              OnClick="(arg) => RgfToolbar.OnDelete()" />
+                @if (RgfToolbar.EnableChart)
+                {
+                    <ToolbarItem PrefixIcon="e-chart" TooltipText="RecroChart"
+                                 OnClick="() => RgfToolbar.OnToolbarCommand(RgfToolbarEventKind.RecroChart)" />
+                }
                 @if (RgfToolbar.SettingsMenu != null)
                 {
                     <ToolbarItem TooltipText="@RecroDict.GetRgfUiString("Setup")">
