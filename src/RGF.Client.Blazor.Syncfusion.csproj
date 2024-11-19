@@ -12,7 +12,7 @@
     <Company>Recrovit Kft.</Company>
     <Product>RecroGrid Framework</Product>
     <Copyright>© Recrovit Kft. All rights reserved.</Copyright>
-    <Version>8.11.1</Version>
+    <Version>8.12.0</Version>
     <FileVersion>$(Version).1$([System.DateTime]::Now.ToString(MMdd))</FileVersion>
     <InformationalVersion>$(FileVersion)</InformationalVersion>
     <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
@@ -38,20 +38,19 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Syncfusion.Blazor.Cards" Version="25.2.7" />
-    <PackageReference Include="Syncfusion.Blazor.DropDowns" Version="25.2.7" />
-    <PackageReference Include="Syncfusion.Blazor.Grid" Version="25.2.7" />
-    <PackageReference Include="Syncfusion.Blazor.Navigations" Version="25.2.7" />
-    <PackageReference Include="Syncfusion.Blazor.Popups" Version="25.2.7" />
-    <PackageReference Include="Syncfusion.Blazor.QueryBuilder" Version="25.2.7" />
-    <PackageReference Include="Syncfusion.Blazor.RichTextEditor" Version="25.2.7" />
-    <PackageReference Include="Syncfusion.Blazor.Themes" Version="25.2.7" />
-    <PackageReference Include="System.Text.Json" Version="8.0.5" />
+    <PackageReference Include="Syncfusion.Blazor.Cards" Version="27.2.2" />
+    <PackageReference Include="Syncfusion.Blazor.DropDowns" Version="27.2.2" />
+    <PackageReference Include="Syncfusion.Blazor.Grid" Version="27.2.2" />
+    <PackageReference Include="Syncfusion.Blazor.Navigations" Version="27.2.2" />
+    <PackageReference Include="Syncfusion.Blazor.Popups" Version="27.2.2" />
+    <PackageReference Include="Syncfusion.Blazor.QueryBuilder" Version="27.2.2" />
+    <PackageReference Include="Syncfusion.Blazor.RichTextEditor" Version="27.2.2" />
+    <PackageReference Include="Syncfusion.Blazor.Themes" Version="27.2.2" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Release'">
-    <PackageReference Include="Recrovit.RecroGridFramework.Blazor.RgfApexCharts" Version="8.2.1" />
-    <PackageReference Include="Recrovit.RecroGridFramework.Client.Blazor" Version="8.11.1" />
+    <PackageReference Include="Recrovit.RecroGridFramework.Blazor.RgfApexCharts" Version="8.3.0" />
+    <PackageReference Include="Recrovit.RecroGridFramework.Client.Blazor" Version="8.12.1" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Debug'">
