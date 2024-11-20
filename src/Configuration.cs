@@ -8,7 +8,7 @@ namespace Recrovit.RecroGridFramework.Client.Blazor.SyncfusionUI;
 
 public static class RGFClientBlazorSyncfusionConfiguration
 {
-    public static async Task InitializeRgfSyncfusionUIAsync(this IServiceProvider serviceProvider, string themeName = "bootstrap5", bool loadResources = true, bool shouldLoadBundledStyles = true)
+    public static async Task InitializeRgfSyncfusionUIAsync(this IServiceProvider serviceProvider, string themeName = "bootstrap5", bool loadResources = true)
     {
         RgfBlazorConfiguration.RegisterComponent<MenuComponent>(RgfBlazorConfiguration.ComponentType.Menu);
         RgfBlazorConfiguration.RegisterComponent<DialogComponent>(RgfBlazorConfiguration.ComponentType.Dialog);
@@ -17,13 +17,13 @@ public static class RGFClientBlazorSyncfusionConfiguration
         if (loadResources)
         {
             var jsRuntime = serviceProvider.GetRequiredService<IJSRuntime>();
-            await LoadResourcesAsync(jsRuntime, themeName, shouldLoadBundledStyles);
+            await LoadResourcesAsync(jsRuntime, themeName);
         }
 
-        await serviceProvider.InitializeRGFBlazorApexChartsAsync(loadResources, shouldLoadBundledStyles);
+        await serviceProvider.InitializeRGFBlazorApexChartsAsync(loadResources);
     }
 
-    public static async Task LoadResourcesAsync(IJSRuntime jsRuntime, string themeName, bool shouldLoadBundledStyles = true)
+    public static async Task LoadResourcesAsync(IJSRuntime jsRuntime, string themeName)
     {
         var libName = Assembly.GetExecutingAssembly().GetName().Name;
 
