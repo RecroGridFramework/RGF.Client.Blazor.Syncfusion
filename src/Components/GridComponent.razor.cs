@@ -5,6 +5,7 @@ using Recrovit.RecroGridFramework.Abstraction.Contracts.Services;
 using Recrovit.RecroGridFramework.Abstraction.Models;
 using Recrovit.RecroGridFramework.Client.Blazor.Components;
 using Recrovit.RecroGridFramework.Client.Events;
+using Recrovit.RecroGridFramework.Client.Handlers;
 using Syncfusion.Blazor.Grids;
 
 namespace Recrovit.RecroGridFramework.Client.Blazor.SyncfusionUI.Components;
@@ -26,6 +27,7 @@ public partial class GridComponent : ComponentBase, IDisposable
     protected override void OnInitialized()
     {
         base.OnInitialized();
+        GridParameters.EnableMultiRowSelection = false;
         GridParameters.EventDispatcher.Subscribe(RgfListEventKind.CreateRowData, OnCreateAttributes);
     }
 
@@ -135,7 +137,21 @@ public partial class GridComponent : ComponentBase, IDisposable
         }
     }
 
-    protected virtual Task RowSelectHandler(RowSelectEventArgs<RgfDynamicDictionary> args) => _rgfGridRef.RowSelectHandlerAsync(args.Data);
+    protected virtual async Task RowSelectHandler(RowSelectEventArgs<RgfDynamicDictionary> args)
+    {
+        var rowData = args.Data;
+        if (_rgfGridRef.SelectedItems.Any())
+        {
+            int idx = Manager.ListHandler.GetAbsoluteRowIndex(rowData);
+            bool deselect = _rgfGridRef.SelectedItems.ContainsKey(idx);
+            await _rgfGridRef.RowDeselectHandlerAsync(rowData);
+            if (deselect)
+            {
+                return;
+            }
+        }
+        await _rgfGridRef.RowSelectHandlerAsync(rowData);
+    }
 
     protected virtual Task RowDeselectHandler(RowDeselectEventArgs<RgfDynamicDictionary> args) => _rgfGridRef.RowDeselectHandlerAsync(args.Data);
 
@@ -144,7 +160,7 @@ public partial class GridComponent : ComponentBase, IDisposable
     private void OnSetFormItem(IRgfEventArgs<RgfToolbarEventArgs> arg)
     {
         var data = _rgfGridRef.SelectedItems.Single();
-        int rowIndex = Manager.ListHandler.GetRelativeRowIndex(data);
+        int rowIndex = Manager.ListHandler.ToRelativeRowIndex(data.Key);
         if (rowIndex != -1)
         {
             _sfGridRef.ClearSelectionAsync();
