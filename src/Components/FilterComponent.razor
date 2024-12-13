@@ -7,31 +7,33 @@
     <FooterTemplate Context="RgfFilterComp">
         <div class="d-flex flex-row justify-content-start">
             <div class="p-2">
-                <label>Query timeout</label>
-                <SfNumericTextBox TValue="int?" @bind-Value="RgfFilterComp.PredefinedFilter.QueryTimeout" ShowSpinButton="false" Width="3em" Min="0" />
+                <label>@RecroDict.GetRgfUiString("SQLTimeout"):</label>
+                <SfNumericTextBox TValue="int?" @bind-Value="RgfFilterComp.FilterSettings.SQLTimeout" ShowSpinButton="false" Width="3em" Min="0" />
             </div>
             <div class="p-2">
-                <SfComboBox Value="RgfFilterComp.PredefinedFilterName" CssClass="e-small" TItem="RgfPredefinedFilter" TValue="string" ShowClearButton="true"
+                <SfComboBox Value="RgfFilterComp.FilterSettings.SettingsName" CssClass="e-small" TItem="RgfFilterSettings" TValue="string" ShowClearButton="true"
                             DataSource="RgfFilterComp.FilterHandler.PredefinedFilters"
-                            ValueChanged="(value) => RgfFilterComp.PredefinedFilterName = value">
-                    <ComboBoxFieldSettings Value="Key" Text="Name" />
-                    <ComboBoxEvents TItem="RgfPredefinedFilter" TValue="string" ValueChange="(args) => RgfFilterComp.OnSetPredefinedFilter(args.Value, args.Value)" />
+                            ValueChanged="(value) => RgfFilterComp.FilterSettings.SettingsName = value">
+                    <ComboBoxFieldSettings Value="SettingsName" />
+                    <ComboBoxEvents TItem="RgfFilterSettings" TValue="string" ValueChange="(args) => RgfFilterComp.OnSetPredefinedFilter(args.ItemData?.FilterSettingsId, args.Value)" />
                 </SfComboBox>
             </div>
             <div class="p-2">
-                <SfCheckBox @bind-Checked=RgfFilterComp.PredefinedFilter.IsGlobal
-                            Disabled="!RgfFilterComp.IsPredefinedFilterAdmin" Label="@RecroDict.GetRgfUiString("Public")" LabelPosition="Syncfusion.Blazor.Buttons.LabelPosition.Before" />
+                <SfComboBox @bind-Value="@RgfFilterComp.FilterSettings.RoleId" TItem="KeyValuePair<string, string>" TValue="string" DataSource="RgfFilterComp.VisibleRoles"
+                            Enabled="!(RgfFilterComp.FilterSettings.IsReadonly == true || !RgfFilterComp.IsPublicFilterSettingAllowed || string.IsNullOrEmpty(RgfFilterComp.FilterSettings.SettingsName))">
+                    <ComboBoxFieldSettings Value="Key" Text="Value" />
+                </SfComboBox>
             </div>
             <div class="pt-2 pb-2">
                 <SfButton CssClass="e-small" HtmlAttributes="@(new Dictionary<string, object>() { {"type", "button"}, { "title", @RecroDict.GetRgfUiString("Save")} })"
-                          Disabled="string.IsNullOrEmpty(RgfFilterComp.PredefinedFilter.Name) || !RgfFilterComp.IsPredefinedFilterAdmin && RgfFilterComp.PredefinedFilter.IsGlobal"
+                          Disabled="RgfFilterComp.FilterSettings.IsReadonly == true || string.IsNullOrEmpty(RgfFilterComp.FilterSettings.SettingsName) || !RgfFilterComp.IsPublicFilterSettingAllowed && RgfFilterComp.FilterSettings.RoleId != null"
                           OnClick="() => RgfFilterComp.OnSavePredefinedFilter()">
                     <SfIcon Name="IconName.Save" Size="IconSize.Medium" />
                 </SfButton>
             </div>
             <div class="pt-2 pb-2">
                 <SfButton CssClass="e-small" HtmlAttributes="@(new Dictionary<string, object>() { {"type", "button"}, { "title", @RecroDict.GetRgfUiString("Delete")} })"
-                          Disabled="string.IsNullOrEmpty(RgfFilterComp.PredefinedFilter.Key) || !RgfFilterComp.IsPredefinedFilterAdmin && RgfFilterComp.PredefinedFilter.IsGlobal"
+                          Disabled="RgfFilterComp.FilterSettings.IsReadonly == true || RgfFilterComp.FilterSettings.FilterSettingsId == null || !RgfFilterComp.IsPublicFilterSettingAllowed && RgfFilterComp.FilterSettings.RoleId != null"
                           OnClick="() => RgfFilterComp.OnDeletePredefinedFilter()">
                     <SfIcon Name="IconName.Trash" Size="IconSize.Medium" />
                 </SfButton>
