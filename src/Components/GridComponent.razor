@@ -25,7 +25,7 @@
                                 AutoFit="prop.ColWidth == 0" Width="@(prop.ColWidth > 0 ? prop.ColWidth.ToString() : null)"
                                 SortComparer="new CustomComparer()">
                         <Template Context="rowData">
-                            @RgfGrid.CreateGridColumn(prop, (RgfDynamicDictionary)rowData)
+                            @RgfGrid.RenderContentItem(prop, (RgfDynamicDictionary)rowData)
                         </Template>
                     </GridColumn>
                 }
@@ -34,7 +34,7 @@
     </GridTemplate>
 
     <ColumnSettingsTemplate>
-        <GridColumnSettingsComponent BaseGridComponent="context" />
+        <GridColumnSettingsComponent BaseDataComponent="context" />
     </ColumnSettingsTemplate>
 </RgfGridComponent>
 
