@@ -1,6 +1,6 @@
 ﻿@using Syncfusion.Blazor.Popups
 
-<SfDialog IsModal="DialogParameters.IsModal"
+<SfDialog IsModal="true"
           AllowDragging="true"
           EnableResize="DialogParameters.Resizable ?? false"
           CssClass="@DialogParameters.CssClass"
@@ -58,11 +58,5 @@
     }
     </SfButton>;
 
-    private void OnClose(BeforeCloseEventArgs args)
-    {
-        if (DialogParameters.OnClose != null)
-        {
-            args.Cancel = DialogParameters.OnClose.Invoke() == false;
-        }
-    }
+    private Task OnClose(BeforeCloseEventArgs args) => DialogParameters.EventDispatcher.RaiseEventAsync(RgfDialogEventKind.Close, this);
 }
