@@ -18,7 +18,7 @@
                 </GridSortColumns>
             </GridSortSettings>
             <GridColumns>
-                @foreach (var prop in EntityDesc.SortedVisibleColumns)
+                @foreach (var prop in Manager.ListHandler.SortedVisibleColumns)
                 {
                     <GridColumn Field="@prop.Alias" HeaderText="@prop.ColTitle" IsPrimaryKey="prop.IsKey"
                                 AllowSorting="@prop.Orderable" AllowResizing="true"
