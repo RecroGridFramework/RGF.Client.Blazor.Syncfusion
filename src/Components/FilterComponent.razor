@@ -25,18 +25,14 @@
                 </SfComboBox>
             </div>
             <div class="pt-2 pb-2">
-                <SfButton CssClass="e-small" HtmlAttributes="@(new Dictionary<string, object>() { {"type", "button"}, { "title", @RecroDict.GetRgfUiString("Save")} })"
+                <SfButton CssClass="e-small" IconCss="e-icons e-save" HtmlAttributes="@(new Dictionary<string, object>() { { "type", "button" }, { "title", @RecroDict.GetRgfUiString("Save") } })"
                           Disabled="RgfFilterComp.FilterSettings.IsReadonly == true || string.IsNullOrEmpty(RgfFilterComp.FilterSettings.SettingsName) || !RgfFilterComp.IsPublicFilterSettingAllowed && RgfFilterComp.FilterSettings.RoleId != null"
-                          OnClick="() => RgfFilterComp.OnSavePredefinedFilter()">
-                    <SfIcon Name="IconName.Save" Size="IconSize.Medium" />
-                </SfButton>
+                          OnClick="() => RgfFilterComp.OnSavePredefinedFilter()" />
             </div>
             <div class="pt-2 pb-2">
-                <SfButton CssClass="e-small" HtmlAttributes="@(new Dictionary<string, object>() { {"type", "button"}, { "title", @RecroDict.GetRgfUiString("Delete")} })"
+                <SfButton CssClass="e-small" IconCss="e-icons e-trash" HtmlAttributes="@(new Dictionary<string, object>() { { "type", "button" }, { "title", @RecroDict.GetRgfUiString("Delete") } })"
                           Disabled="RgfFilterComp.FilterSettings.IsReadonly == true || RgfFilterComp.FilterSettings.FilterSettingsId == null || !RgfFilterComp.IsPublicFilterSettingAllowed && RgfFilterComp.FilterSettings.RoleId != null"
-                          OnClick="() => RgfFilterComp.OnDeletePredefinedFilter()">
-                    <SfIcon Name="IconName.Trash" Size="IconSize.Medium" />
-                </SfButton>
+                          OnClick="() => RgfFilterComp.OnDeletePredefinedFilter()" />
             </div>
         </div>
         <div class="d-flex flex-row justify-content-between mt-2">

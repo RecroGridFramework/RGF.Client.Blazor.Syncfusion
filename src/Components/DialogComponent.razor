@@ -42,20 +42,18 @@
     public RgfDialogParameters DialogParameters { get; set; } = null!;
 
     private RenderFragment<ButtonParameters> CreateButton => (button) =>
-    @<SfButton CssClass="@button.CssClass" HtmlAttributes="@(new Dictionary<string, object?>() { { "title", button.Title} })" IsPrimary="button.IsPrimary"
-                   Disabled="@button.Disabled" OnClick="button.Callback">
-        @if(!string.IsNullOrEmpty(button.IconName) && Enum.TryParse<IconName>(button.IconName, out IconName icon))
-    {
-        <SfIcon Name="@icon" />
-    }
+    @<SfButton CssClass="@button.CssClass"
+               IconCss="@(button.IconName ?? String.Empty)"
+               HtmlAttributes="@(new Dictionary<string, object?>() { { "title", button.Title} })" IsPrimary="button.IsPrimary"
+               Disabled="@button.Disabled" OnClick="button.Callback">
         @if (!string.IsNullOrEmpty(button.ChildText))
-    {
-        @button.ChildText
-    }
-    else if (button.ChildContent != null)
-    {
-        @button.ChildContent
-    }
+        {
+            @button.ChildText
+        }
+        else if (button.ChildContent != null)
+        {
+            @button.ChildContent
+        }
     </SfButton>;
 
     private Task OnClose(BeforeCloseEventArgs args) => DialogParameters.EventDispatcher.RaiseEventAsync(RgfDialogEventKind.Close, this);
