@@ -12,9 +12,7 @@
                         </SfComboBox>
                     </div>
                     <div>
-                        <SfButton CssClass="e-small" OnClick="() => OnRemoveCondition(item)">
-                            <SfIcon Name="IconName.Trash" />
-                        </SfButton>
+                        <SfButton CssClass="e-small" IconCss="e-icons e-trash" OnClick="() => OnRemoveCondition(item)" />
                     </div>
                     <div>
                         <SfButton CssClass="e-small"  OnClick="() => OnAddBracket(item)">{ }</SfButton>
@@ -153,9 +151,7 @@
             }
         }
         <li>
-            <SfButton CssClass="e-small e-outline" IsPrimary="true" OnClick="() => OnAddCondition(Condition)">
-                <SfIcon Name="IconName.Plus" />
-            </SfButton>
+            <SfButton CssClass="e-small e-outline" IconCss="e-icons e-plus" IsPrimary="true" OnClick="() => OnAddCondition(Condition)" />
         </li>
     </ul>
 </div>

@@ -157,14 +157,14 @@ public partial class GridComponent : ComponentBase, IDisposable
 
     protected virtual Task OnRecordDoubleClick(RecordDoubleClickEventArgs<RgfDynamicDictionary> args) => _rgfGridRef.OnRecordDoubleClickAsync(args.RowData);
 
-    private void OnSetFormItem(IRgfEventArgs<RgfToolbarEventArgs> arg)
+    private async Task OnSetFormItem(IRgfEventArgs<RgfToolbarEventArgs> arg)
     {
         var data = _rgfGridRef.SelectedItems.Single();
         int rowIndex = Manager.ListHandler.ToRelativeRowIndex(data.Key);
         if (rowIndex != -1)
         {
-            _sfGridRef.ClearSelectionAsync();
-            _sfGridRef.SelectRowAsync(rowIndex);
+            await _sfGridRef.ClearRowSelectionAsync();
+            await _sfGridRef.SelectRowAsync(rowIndex);
         }
     }
 }

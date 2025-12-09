@@ -3,26 +3,18 @@
         <div class="e-pager">
             @if (RgfPager.ItemCount != 0)
             {
-                <SfButton CssClass="e-small" OnClick="OnShowFirstPage" Disabled="RgfPager.CurrentPage == 1">
-                    <SfIcon Name="IconName.ChevronLeftDouble" />
-                </SfButton>
-                <SfButton CssClass="e-small" OnClick="OnShowPreviousPage" Disabled="RgfPager.CurrentPage == 1">
-                    <SfIcon Name="IconName.ChevronLeft" />
-                </SfButton>
+                <SfButton CssClass="e-small" IconCss="e-icons e-chevron-left-double" OnClick="OnShowFirstPage" Disabled="RgfPager.CurrentPage == 1" />
+                <SfButton CssClass="e-small" IconCss="e-icons e-chevron-left" OnClick="OnShowPreviousPage" Disabled="RgfPager.CurrentPage == 1" />
 
                 <SfNumericTextBox TValue="int" Value="RgfPager.CurrentPage" OnChange="OnShowPage"
                                   ShowSpinButton="false" Min="1" Max="RgfPager.TotalPages" CssClass="e-small e-success ms-2"
                                   Width="@CalcWidth(RgfPager.CurrentPage)" />
 
-                <SfButton CssClass="e-small ms-2" OnClick="OnShowNextPage" Disabled="RgfPager.CurrentPage >= RgfPager.TotalPages">
-                    <SfIcon Name="IconName.ChevronRight" />
-                </SfButton>
+                <SfButton CssClass="e-small ms-2" IconCss="e-icons e-chevron-right" OnClick="OnShowNextPage" Disabled="RgfPager.CurrentPage >= RgfPager.TotalPages" />
 
                 if (RgfPager.ItemCount > 0)
                 {
-                    <SfButton CssClass="e-small ms-1" OnClick="OnShowLastPage" Disabled="RgfPager.CurrentPage == RgfPager.TotalPages">
-                        <SfIcon Name="IconName.ChevronRightDouble" />
-                    </SfButton>
+                    <SfButton CssClass="e-small ms-1" IconCss="e-icons e-chevron-right-double" OnClick="OnShowLastPage" Disabled="RgfPager.CurrentPage == RgfPager.TotalPages" />
 
                     <label class="ms-2">@RecroDict.GetRgfUiString("PageCount")</label>
                     <SfNumericTextBox TValue="int" Value="@RgfPager.TotalPages" Readonly="true" ShowSpinButton="false" Width="@CalcWidth(RgfPager.TotalPages)" />

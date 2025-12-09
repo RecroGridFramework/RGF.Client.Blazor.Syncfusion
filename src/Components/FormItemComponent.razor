@@ -24,9 +24,7 @@
                                        CssClass="@RgfFormItem.CssClass" ID="@Id" />
                         </div>
                         <div class="col-1">
-                            <SfButton type="button" IsPrimary="true" CssClass="e-small e-outline" OnClick="async () => await RgfFormItem.FindEntityAsync(ItemData.StringValue)">
-                                <SfIcon Name="IconName.Search" Size="IconSize.Medium" />
-                            </SfButton>
+                            <SfButton type="button" IsPrimary="true" CssClass="e-small e-outline" IconCss="e-icons e-search" OnClick="async () => await RgfFormItem.FindEntityAsync(ItemData.StringValue)" />
                         </div>
                     </div>
                 }
